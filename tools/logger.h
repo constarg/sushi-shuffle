@@ -1,0 +1,4 @@
+#ifndef FILE_MANAGER_LOGGER_H
+#define FILE_MANAGER_LOGGER_H 1
+
+#endif
