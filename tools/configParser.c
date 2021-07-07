@@ -7,6 +7,7 @@
 
 #include "configParser.h"
 
+void parseData(struct config* conf, char* buffer);
 int getTimeout(const char*);
 int getSortOnReboot(char* buffer);
 int getDebug(char*);
@@ -25,30 +26,31 @@ int getConfig(struct config* conf) {
     struct stat fileStats;
 
     if (lstat(CONFIG_PATH, &fileStats) == -1) {
-        perror("lstat");
         // toDO log it using logger.
         return 0;
     }
     // make the size of the buffer equal to the config file size.
     buffer = malloc(sizeof(char) * fileStats.st_size);
-    read(confFD, buffer, fileStats.st_size - 1);
-
-    getTargets(buffer);
+    read(confFD, buffer, fileStats.st_size);
+    parseData(conf, buffer);
 
     free(buffer);
     return 1;
 }
 
-int parseData(struct config* conf, char* buffer) {
-
-
-
-    return 1;
+void parseData(struct config* conf, char* buffer) {
+    conf -> timeout = getTimeout(buffer);
+    conf -> sortOnReboot = getSortOnReboot(buffer);
+    conf -> debug = getDebug(buffer);
+    conf -> defaultFolderPath = getDefaultDirPath(buffer);
+    conf -> targetsPath = getTargets(buffer);
 }
 
 int getTimeout(const char* buffer) {
     char* locationOnConf = strstr(buffer, TIMEOUT);
-    if (locationOnConf[0] == '#') return -1;
+    if (locationOnConf[0] == '#'
+        || locationOnConf[7] == '\n'
+        || locationOnConf[8] == ' ') return -1;
 
     int timeout = 0;
     for (int i = 8; locationOnConf[i] != '\n'; i++) timeout = timeout * 10 + locationOnConf[i] - 48;
@@ -58,7 +60,9 @@ int getTimeout(const char* buffer) {
 
 int getSortOnReboot(char* buffer) {
     char* locationOnConf = strstr(buffer, SORT_ON_REBOOT);
-    if (locationOnConf[0] == '#') return -1;
+    if (locationOnConf[0] == '#'
+        || locationOnConf[12] == '\n'
+        || locationOnConf[13] == ' ') return -1;
 
     return (int) locationOnConf[13] - 48;
 }
@@ -66,14 +70,18 @@ int getSortOnReboot(char* buffer) {
 
 int getDebug(char* buffer) {
     char* locationOnConf = strstr(buffer, DEBUG);
-    if (locationOnConf[0] == '#') return -1;
+    if (locationOnConf[0] == '#'
+        || locationOnConf[8] == '\n'
+        || locationOnConf[9] == ' ') return -1;
 
     return locationOnConf[9] - 48;
 }
 
 char* getDefaultDirPath(char* buffer) {
     char* locationOnConf = strstr(buffer, DEFAULT_DIR_PATH);
-    if (locationOnConf[0] == '#') return NULL;
+    if (locationOnConf[0] == '#'
+        || locationOnConf[16] == '\n'
+        || locationOnConf[17] == ' ') return NULL;
 
     int len = getLength(locationOnConf);
     char* defaultDir = malloc(sizeof(char) * len);
@@ -84,6 +92,8 @@ char* getDefaultDirPath(char* buffer) {
 
 char** getTargets(char* buffer) {
     char* locationOnConf = strstr(buffer, TARGETS);
+    if (locationOnConf == NULL) return NULL;
+
     char* splitter = "\n";
     char* target = strtok(locationOnConf, splitter);
     int counter = countTargets(locationOnConf);
@@ -91,15 +101,10 @@ char** getTargets(char* buffer) {
     counter = 0;
 
     while (target != NULL) {
-        if (target == TARGETS || target[0] == "#") continue;
-
         targets[counter] = target;
         target = strtok(NULL, splitter);
         counter++;
     }
-
-    for (int i = 0; i < counter; i++) printf("%s",targets[i]);
-
 
     return targets;
 }
