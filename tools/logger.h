@@ -8,6 +8,6 @@
 #define ERROR 3
 #define WARN 4
 
-extern void makeLog(char* message, int logType, int seriousness);
+extern void makeLog(const char* message, int logType, int seriousness);
 
 #endif
