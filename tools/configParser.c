@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <malloc.h>
@@ -6,15 +5,24 @@
 #include <string.h>
 
 #include "configParser.h"
+#include "logger.h"
 
-void parseData(struct config* conf, char* buffer);
-int getTimeout(const char*);
-int getSortOnReboot(char* buffer);
+#define CONFIG_PATH "../config/config.conf"
+#define TIMEOUT "timeout"
+#define SORT_ON_REBOOT "sortOnReboot"
+#define DEBUG "debugLog"
+#define DEFAULT_DIR_PATH "default_dir_path"
+#define TARGETS "[targets]"
+
+void parseData(struct config*, char*);
+int getTimeout(char*);
+int getSortOnReboot(char*);
 int getDebug(char*);
 char* getDefaultDirPath(char*);
 char** getTargets(char*);
 int getLength(const char*);
-int countTargets(const char* locationOfTargets);
+int countTargets(const char*);
+int hasParseError(const char*,char*, int, int);
 
 int getConfig(struct config* conf) {
     // get the file descriptor of config file.
@@ -26,15 +34,19 @@ int getConfig(struct config* conf) {
     struct stat fileStats;
 
     if (lstat(CONFIG_PATH, &fileStats) == -1) {
-        // toDO log it using logger.
-        return 0;
+        makeLog("Failed to read config size.", NORMAL_LOG, ERROR);
+        return -1;
     }
     // make the size of the buffer equal to the config file size.
     buffer = malloc(sizeof(char) * fileStats.st_size);
-    read(confFD, buffer, fileStats.st_size);
+    if (read(confFD, buffer, fileStats.st_size) == -1) {
+        makeLog("Failed to read config.", NORMAL_LOG, ERROR);
+        return -1;
+    }
     parseData(conf, buffer);
 
     free(buffer);
+    makeLog("Config has loaded successfully", NORMAL_LOG, SUCCESS);
     return 1;
 }
 
@@ -46,53 +58,55 @@ void parseData(struct config* conf, char* buffer) {
     conf -> targetsPath = getTargets(buffer);
 }
 
-int getTimeout(const char* buffer) {
+int getTimeout(char* buffer) {
     char* locationOnConf = strstr(buffer, TIMEOUT);
-    if (locationOnConf[0] == '#'
-        || locationOnConf[7] == '\n'
-        || locationOnConf[8] == ' ') return -1;
+    int error = hasParseError(locationOnConf, "Failed to parse timeout",7, 8);
+
+    if (error) return -1;
 
     int timeout = 0;
     for (int i = 8; locationOnConf[i] != '\n'; i++) timeout = timeout * 10 + locationOnConf[i] - 48;
 
+    makeLog("Timeout parsed successfully", NORMAL_LOG, SUCCESS);
     return timeout;
 }
 
 int getSortOnReboot(char* buffer) {
     char* locationOnConf = strstr(buffer, SORT_ON_REBOOT);
-    if (locationOnConf[0] == '#'
-        || locationOnConf[12] == '\n'
-        || locationOnConf[13] == ' ') return -1;
+    int error = hasParseError(locationOnConf, "Failed to parse sortOnReboot", 12, 13);
+    if (error) return -1;
 
+    makeLog("SortOnReboot parsed successfully", NORMAL_LOG, SUCCESS);
     return (int) locationOnConf[13] - 48;
 }
 
-
 int getDebug(char* buffer) {
     char* locationOnConf = strstr(buffer, DEBUG);
-    if (locationOnConf[0] == '#'
-        || locationOnConf[8] == '\n'
-        || locationOnConf[9] == ' ') return -1;
+    int error = hasParseError(locationOnConf, "Failed to parse debugLog",8, 9);
+    if (error) return -1;
 
-    return locationOnConf[9] - 48;
+    makeLog("DebugLog parsed successfully", NORMAL_LOG, SUCCESS);
+    return (int) locationOnConf[9] - 48;
 }
 
 char* getDefaultDirPath(char* buffer) {
     char* locationOnConf = strstr(buffer, DEFAULT_DIR_PATH);
-    if (locationOnConf[0] == '#'
-        || locationOnConf[16] == '\n'
-        || locationOnConf[17] == ' ') return NULL;
+    int error = hasParseError(locationOnConf,"Failed to parse default_dir_path",16, 17);
+
+    if (error) return NULL;
 
     int len = getLength(locationOnConf);
     char* defaultDir = malloc(sizeof(char) * len);
     for (int i = 17; i < len; i++) defaultDir[i - 17] = locationOnConf[i];
 
+    makeLog("Default_dir_path parsed successfully", NORMAL_LOG, SUCCESS);
     return defaultDir;
 }
 
 char** getTargets(char* buffer) {
     char* locationOnConf = strstr(buffer, TARGETS);
-    if (locationOnConf == NULL) return NULL;
+    int error = hasParseError(locationOnConf, "Failed to parse targets", 0, 0);
+    if (error) return NULL;
 
     char* splitter = "\n";
     char* target = strtok(locationOnConf, splitter);
@@ -106,6 +120,7 @@ char** getTargets(char* buffer) {
         counter++;
     }
 
+    makeLog("Targets parsed successfully", NORMAL_LOG, SUCCESS);
     return targets;
 }
 
@@ -123,4 +138,15 @@ int countTargets(const char* locationOfTargets) {
     }
 
     return counter;
+}
+
+int hasParseError(const char* locationOnConf,
+                  char* message, int index1, int index2) {
+
+    if (locationOnConf == NULL || (locationOnConf[index1] == '\n' || locationOnConf[index2] == ' ') ) {
+        makeLog(message, NORMAL_LOG, ERROR);
+        return 1;
+    }
+
+    return 0;
 }
