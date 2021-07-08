@@ -20,7 +20,7 @@
 void parseData(struct config*, char*);
 char** getTargets(char*);
 int countTargets(const char*);
-int hasParseError(const char*, const char*);
+int hasParseError(const char*, const char*, int, int);
 void* getValueByKey(const char*, char*,int);
 
 int getConfig(struct config* conf) {
@@ -58,24 +58,26 @@ void parseData(struct config* conf, char* buffer) {
 }
 
 void* getValueByKey(const char* buffer, char key[], int isInteger) {
-    char* tmp = alloca(sizeof(char) * strlen(buffer));
+    char* tmp = malloc(sizeof(char) * strlen(buffer));
     strcpy(tmp, buffer);
     char* locationOnConf = strstr(tmp, key);
     char errorMessage[50] = ERROR_MESSAGE;
     char successMessage[50] = SUCCESS_MESSAGE;
     strcat(errorMessage, key);
     strcat(successMessage, key);
+    int keyLen = (int) strlen(key);
 
-    if (hasParseError(locationOnConf, errorMessage)) return NULL;
+    if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen+1)) return NULL;
 
     strtok(locationOnConf, " ");
     char* value = strtok(NULL, "\n");
 
     if (!isInteger) {
-        if (hasParseError(value, errorMessage)) return NULL;
+        if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen+1)) return NULL;
+        makeLog(successMessage, NORMAL_LOG, SUCCESS);
         return value;
     }
-    if (hasParseError(value, errorMessage)) return NULL;
+    if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen+1)) return NULL;
     int* integerValue = malloc(sizeof(int));
     int len = (int) strlen(value);
     for (int i = 0; i < len; i++ ) *integerValue = *integerValue * 10 + value[i] - 48;
@@ -87,8 +89,7 @@ void* getValueByKey(const char* buffer, char key[], int isInteger) {
 
 char** getTargets(char* buffer) {
     char* locationOnConf = strstr(buffer, TARGETS);
-    int error = hasParseError(locationOnConf, "Failed to parse targets");
-    if (error) return NULL;
+    if (hasParseError(locationOnConf, "Failed to parse targets",0,0)) return NULL;
 
     char* splitter = "\n";
     char* target = strtok(locationOnConf, splitter);
@@ -115,9 +116,9 @@ int countTargets(const char* locationOfTargets) {
     return counter;
 }
 
-int hasParseError(const char* locationOnConf, const char* message) {
-
-    if (locationOnConf == NULL) {
+int hasParseError(const char* locationOnConf, const char* message, int index1, int index2) {
+    // check if locationConf.
+    if (locationOnConf == NULL || locationOnConf[index1] == '\n' || locationOnConf[index2] == '\n') {
         makeLog(message, NORMAL_LOG, ERROR);
         return 1;
     }
