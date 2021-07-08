@@ -1,6 +1,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <malloc.h>
+#include <alloca.h>
 #include <unistd.h>
 #include <string.h>
 
@@ -57,7 +58,7 @@ void parseData(struct config* conf, char* buffer) {
 }
 
 void* getValueByKey(const char* buffer, char key[], int isInteger) {
-    char* tmp = malloc(sizeof(char) * strlen(buffer));
+    char* tmp = alloca(sizeof(char) * strlen(buffer));
     strcpy(tmp, buffer);
     char* locationOnConf = strstr(tmp, key);
     char errorMessage[50] = ERROR_MESSAGE;
