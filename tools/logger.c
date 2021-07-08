@@ -9,9 +9,12 @@
 #define SUCCESS_PREFIX "[SUCCESS]"
 #define WARN_PREFIX "[WARN]"
 
-void showLogs(const char*, const char*, const char*);
+#define LOG_FILE "../logs/logs.log"
 
-void makeLog(const char* message, int logType, int seriousness) {
+void showLogs(const char*, const char*, const char*, const char*);
+int saveLogs();
+
+int makeLog(const char* message, const char* reason , int logType, int seriousness) {
     char* prefix;
     char* seriousnessType;
     if (logType == DEBUG_LOG) prefix = DEBUG_PREFIX;
@@ -21,10 +24,25 @@ void makeLog(const char* message, int logType, int seriousness) {
     else if (seriousness == SUCCESS) seriousnessType = SUCCESS_PREFIX;
     else seriousnessType = WARN_PREFIX;
 
-    showLogs(message, prefix, seriousnessType);
+    showLogs(message, prefix, seriousnessType, reason);
+
+    if (seriousness == ERROR) return -1;
+
+    return 0;
 }
 
-void showLogs(const char* message, const char* logTypePrefix, const char* seriousnessType) {
+void showLogs(const char* message,
+              const char* logTypePrefix,
+              const char* seriousnessType,
+              const char* reason) {
+    if (reason) {
+        printf("%s %s %s [reason] %s\n",logTypePrefix,seriousnessType, message, reason);
+        return;
+    }
     printf("%s %s %s\n",logTypePrefix,seriousnessType, message);
+
 }
 
+int saveLogs() {
+
+}

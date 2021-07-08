@@ -1,21 +1,35 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <malloc.h>
-#include <alloca.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 
 #include "configParser.h"
 #include "logger.h"
 
 #define CONFIG_PATH "../config/config.conf"
+
 #define TIMEOUT "timeout"
 #define SORT_ON_REBOOT "sortOnReboot"
 #define DEBUG "debugLog"
 #define DEFAULT_DIR_PATH "default_dir_path"
 #define TARGETS "[targets]"
-#define ERROR_MESSAGE "Failed to parse "
+
 #define SUCCESS_MESSAGE "Successfully parse "
+#define SUCCESS_LOAD "Successfully load config"
+
+#define ERROR_MESSAGE "Failed to parse "
+
+#define PARSE_FAILED_EMPTY "The value is empty"
+#define PARSE_FAILED_NOTHING "There is no value"
+#define PARSE_FAILED_NO_FIELD "There is no such field"
+
+#define FAILED_TO_OPEN "Failed to open config file"
+#define FAILED_TO_READ_SIZE "Failed to read config size"
+#define FAILED_TO_READ "Failed to read config file"
+#define FAILED_TO_CLOSE "Failed to close config file"
+
 
 void parseData(struct config*, char*);
 char** getTargets(char*);
@@ -28,24 +42,21 @@ int getConfig(struct config* conf) {
     int confFD = open(CONFIG_PATH, O_RDONLY);
     char *buffer = NULL;
 
-    if (confFD == -1) return 0;
+    // error handling.
+    if (confFD == -1) return makeLog(FAILED_TO_OPEN, strerror(errno), NORMAL_LOG, ERROR);
 
     struct stat fileStats;
 
-    if (lstat(CONFIG_PATH, &fileStats) == -1) {
-        makeLog("Failed to read config size.", NORMAL_LOG, ERROR);
-        return -1;
-    }
+    if (lstat(CONFIG_PATH, &fileStats) == -1) return makeLog(FAILED_TO_READ_SIZE, strerror(errno), NORMAL_LOG, ERROR);
     // make the size of the buffer equal to the config file size.
     buffer = malloc(sizeof(char) * fileStats.st_size);
-    if (read(confFD, buffer, fileStats.st_size) == -1) {
-        makeLog("Failed to read config.", NORMAL_LOG, ERROR);
-        return -1;
-    }
-    parseData(conf, buffer);
+    // error handling.
+    if (read(confFD, buffer, fileStats.st_size) == -1) return makeLog(FAILED_TO_READ, strerror(errno), NORMAL_LOG, ERROR);
+    if (close(confFD)) return makeLog(FAILED_TO_CLOSE, strerror(errno), NORMAL_LOG, ERROR);
 
+    makeLog(SUCCESS_LOAD, NULL, NORMAL_LOG, SUCCESS);
+    parseData(conf, buffer);
     free(buffer);
-    makeLog("Successfully load config", NORMAL_LOG, SUCCESS);
     return 1;
 }
 
@@ -74,7 +85,7 @@ void* getValueByKey(const char* buffer, char key[], int isInteger) {
 
     if (!isInteger) {
         if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen+1)) return NULL;
-        makeLog(successMessage, NORMAL_LOG, SUCCESS);
+        makeLog(successMessage, NULL, NORMAL_LOG, SUCCESS);
         return value;
     }
     if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen+1)) return NULL;
@@ -82,14 +93,18 @@ void* getValueByKey(const char* buffer, char key[], int isInteger) {
     int len = (int) strlen(value);
     for (int i = 0; i < len; i++ ) *integerValue = *integerValue * 10 + value[i] - 48;
 
-    makeLog(successMessage, NORMAL_LOG, SUCCESS);
+    makeLog(successMessage, NULL, NORMAL_LOG, SUCCESS);
     return integerValue;
 }
 
 
 char** getTargets(char* buffer) {
     char* locationOnConf = strstr(buffer, TARGETS);
-    if (hasParseError(locationOnConf, "Failed to parse targets",0,0)) return NULL;
+    char errorMessage[20] = ERROR_MESSAGE;
+    char successMessage[20] = SUCCESS_MESSAGE;
+    strcat(errorMessage, "targets");
+    strcat(successMessage, "targets");
+    if (hasParseError(locationOnConf, errorMessage,0,0)) return NULL;
 
     char* splitter = "\n";
     char* target = strtok(locationOnConf, splitter);
@@ -103,7 +118,7 @@ char** getTargets(char* buffer) {
         counter++;
     }
 
-    makeLog("Successfully parse targets", NORMAL_LOG, SUCCESS);
+    makeLog(successMessage, NULL, NORMAL_LOG, SUCCESS);
     return targets;
 }
 
@@ -118,10 +133,9 @@ int countTargets(const char* locationOfTargets) {
 
 int hasParseError(const char* locationOnConf, const char* message, int index1, int index2) {
     // check if locationConf.
-    if (locationOnConf == NULL || locationOnConf[index1] == '\n' || locationOnConf[index2] == '\n') {
-        makeLog(message, NORMAL_LOG, ERROR);
-        return 1;
-    }
+    if (locationOnConf == NULL) return makeLog(message, PARSE_FAILED_NO_FIELD, NORMAL_LOG, ERROR);
+    else if (locationOnConf[index1] == '\n') return makeLog(message, PARSE_FAILED_NOTHING, NORMAL_LOG, ERROR);
+    else if (locationOnConf[index2] == '\n') return makeLog(message, PARSE_FAILED_EMPTY, NORMAL_LOG, ERROR);
 
     return 0;
 }
