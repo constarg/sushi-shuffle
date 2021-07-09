@@ -15,12 +15,12 @@
 #define DEBUG "debugLog"
 #define DEFAULT_DIR_PATH "default_dir_path"
 #define TARGETS "[targets]"
+#define CHECK "[check]"
 
 #define SUCCESS_MESSAGE "Successfully parse "
 #define SUCCESS_LOAD "Successfully load config"
 
 #define ERROR_MESSAGE "Failed to parse "
-
 #define PARSE_FAILED_EMPTY "The value is empty"
 #define PARSE_FAILED_NOTHING "There is no value"
 #define PARSE_FAILED_NO_FIELD "There is no such field"
@@ -32,7 +32,7 @@
 
 
 void parseData(struct config*, char*);
-char** getTargets(char*);
+char** getDependencies(char*, char*);
 int countTargets(const char*);
 int hasParseError(const char*, const char*, int, int);
 void* getValueByKey(const char*, char*,int);
@@ -65,7 +65,8 @@ void parseData(struct config* conf, char* buffer) {
     conf -> sortOnReboot = (int*) getValueByKey(buffer, SORT_ON_REBOOT, 1);
     conf -> debug = (int*) getValueByKey(buffer, DEBUG, 1);
     conf -> defaultFolderPath = (char*) getValueByKey(buffer, DEFAULT_DIR_PATH, 0);
-    conf -> targetsPath = getTargets(buffer);
+    conf -> targetsPath = getDependencies(buffer, TARGETS);
+    conf -> check = getDependencies(buffer, CHECK);
 }
 
 void* getValueByKey(const char* buffer, char key[], int isInteger) {
@@ -98,23 +99,23 @@ void* getValueByKey(const char* buffer, char key[], int isInteger) {
 }
 
 
-char** getTargets(char* buffer) {
-    char* locationOnConf = strstr(buffer, TARGETS);
+char** getDependencies(char* buffer, char* dependency) {
+    char* locationOnConf = strstr(buffer, dependency);
     char errorMessage[20] = ERROR_MESSAGE;
     char successMessage[20] = SUCCESS_MESSAGE;
-    strcat(errorMessage, "targets");
-    strcat(successMessage, "targets");
+    strcat(errorMessage, dependency);
+    strcat(successMessage, dependency);
     if (hasParseError(locationOnConf, errorMessage,0,0)) return NULL;
 
     char* splitter = "\n";
-    char* target = strtok(locationOnConf, splitter);
+    char* currentDependency = strtok(locationOnConf, splitter);
     int counter = countTargets(locationOnConf);
     char** targets = malloc(sizeof(char*) * counter);
     counter = 0;
 
-    while (target != NULL) {
-        targets[counter] = target;
-        target = strtok(NULL, splitter);
+    while (currentDependency != NULL) {
+        targets[counter] = currentDependency;
+        currentDependency = strtok(NULL, splitter);
         counter++;
     }
 
@@ -132,7 +133,6 @@ int countTargets(const char* locationOfTargets) {
 }
 
 int hasParseError(const char* locationOnConf, const char* message, int index1, int index2) {
-    // check if locationConf.
     if (locationOnConf == NULL) return makeLog(message, PARSE_FAILED_NO_FIELD, NORMAL_LOG, ERROR);
     else if (locationOnConf[index1] == '\n') return makeLog(message, PARSE_FAILED_NOTHING, NORMAL_LOG, ERROR);
     else if (locationOnConf[index2] == '\n') return makeLog(message, PARSE_FAILED_EMPTY, NORMAL_LOG, ERROR);

@@ -9,10 +9,7 @@
 #define SUCCESS_PREFIX "[SUCCESS]"
 #define WARN_PREFIX "[WARN]"
 
-#define LOG_FILE "../logs/logs.log"
-
 void showLogs(const char*, const char*, const char*, const char*);
-int saveLogs();
 
 int makeLog(const char* message, const char* reason , int logType, int seriousness) {
     char* prefix;
@@ -40,9 +37,5 @@ void showLogs(const char* message,
         return;
     }
     printf("%s %s %s\n",logTypePrefix,seriousnessType, message);
-
-}
-
-int saveLogs() {
 
 }

@@ -7,6 +7,7 @@ struct config {
     int* debug;
     char* defaultFolderPath;
     char** targetsPath;
+    char** check;
 };
 
 extern int getConfig(struct config* conf);
