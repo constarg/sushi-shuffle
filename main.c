@@ -1,12 +1,11 @@
+#include <unistd.h>
 #include <stdio.h>
-#include <malloc.h>
-#include "tools/configParser.h"
+#include "./src/manager.h"
+
 
 
 
 int main() {
-    struct config *test = malloc(sizeof(struct config));
-
-    getConfig(test);
+    run();
     return 0;
 }
