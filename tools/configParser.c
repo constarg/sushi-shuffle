@@ -4,16 +4,18 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <stdlib.h>
 
 #include "configParser.h"
 #include "logger.h"
 
 #define CONFIG_PATH "../config/config.conf"
 
-#define TIMEOUT "timeout"
+#define CHECK_INTERVAL "checkInterval"
+#define PARSE_INTERVAL "parseInterval"
 #define SORT_ON_REBOOT "sortOnReboot"
 #define DEBUG "debugLog"
-#define DEFAULT_DIR_PATH "default_dir_path"
+#define DEFAULT_DIR_PATH "defaultDirPath"
 #define TARGETS "[targets]"
 #define CHECK "[check]"
 
@@ -35,7 +37,7 @@ void parseData(struct config*, char*);
 char** getDependencies(char*, char*);
 int countTargets(const char*);
 int hasParseError(const char*, const char*, int, int);
-void* getValueByKey(const char*, char*,int);
+void* getValueByKey(char[], char*,int);
 
 int getConfig(struct config* conf) {
     // get the file descriptor of config file.
@@ -57,20 +59,22 @@ int getConfig(struct config* conf) {
     makeLog(SUCCESS_LOAD, NULL, NORMAL_LOG, SUCCESS);
     parseData(conf, buffer);
     free(buffer);
-    return 1;
+    return 0;
 }
 
 void parseData(struct config* conf, char* buffer) {
-    conf -> timeout = (int*) getValueByKey(buffer, TIMEOUT, 1);
+    conf -> checkInterval = (int*) getValueByKey(buffer, CHECK_INTERVAL, 1);
+    conf -> parseInterval = (int*) getValueByKey(buffer, PARSE_INTERVAL, 1);
     conf -> sortOnReboot = (int*) getValueByKey(buffer, SORT_ON_REBOOT, 1);
-    conf -> debug = (int*) getValueByKey(buffer, DEBUG, 1);
-    conf -> defaultFolderPath = (char*) getValueByKey(buffer, DEFAULT_DIR_PATH, 0);
+    conf -> debugLog = (int*) getValueByKey(buffer, DEBUG, 1);
+    conf -> defaultDirPath = (char*) getValueByKey(buffer, DEFAULT_DIR_PATH, 0);
     conf -> targetsPath = getDependencies(buffer, TARGETS);
     conf -> check = getDependencies(buffer, CHECK);
 }
 
-void* getValueByKey(const char* buffer, char key[], int isInteger) {
-    char* tmp = malloc(sizeof(char) * strlen(buffer));
+void* getValueByKey(char buffer[], char key[], int isInteger) {
+    char *tmp = NULL;
+    tmp = malloc(sizeof(char) * strlen(buffer));
     strcpy(tmp, buffer);
     char* locationOnConf = strstr(tmp, key);
     char errorMessage[50] = ERROR_MESSAGE;
@@ -86,18 +90,20 @@ void* getValueByKey(const char* buffer, char key[], int isInteger) {
 
     if (!isInteger) {
         if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen+1)) return NULL;
+        char* returnedValue = malloc(sizeof(char) * strlen(value));
+        strcpy(returnedValue, value);
         makeLog(successMessage, NULL, NORMAL_LOG, SUCCESS);
-        return value;
+        free(tmp);
+        return returnedValue;
     }
     if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen+1)) return NULL;
+    long tmpInteger = strtol(value, &value, 10);
     int* integerValue = malloc(sizeof(int));
-    int len = (int) strlen(value);
-    for (int i = 0; i < len; i++ ) *integerValue = *integerValue * 10 + value[i] - 48;
-
+    *integerValue = (int) tmpInteger;
+    free(tmp);
     makeLog(successMessage, NULL, NORMAL_LOG, SUCCESS);
     return integerValue;
 }
-
 
 char** getDependencies(char* buffer, char* dependency) {
     char* locationOnConf = strstr(buffer, dependency);
@@ -108,19 +114,20 @@ char** getDependencies(char* buffer, char* dependency) {
     if (hasParseError(locationOnConf, errorMessage,0,0)) return NULL;
 
     char* splitter = "\n";
-    char* currentDependency = strtok(locationOnConf, splitter);
     int counter = countTargets(locationOnConf);
-    char** targets = malloc(sizeof(char*) * counter);
+    char* currentDependency = strtok(locationOnConf, splitter);
+
+    char** dependencies = malloc(sizeof(char*) * counter);
     counter = 0;
 
     while (currentDependency != NULL) {
-        targets[counter] = currentDependency;
+        dependencies[counter] = currentDependency;
         currentDependency = strtok(NULL, splitter);
         counter++;
     }
 
     makeLog(successMessage, NULL, NORMAL_LOG, SUCCESS);
-    return targets;
+    return dependencies;
 }
 
 int countTargets(const char* locationOfTargets) {
@@ -139,4 +146,18 @@ int hasParseError(const char* locationOnConf, const char* message, int index1, i
 
     return 0;
 }
+
+struct config* clearConfig(struct config* conf) {
+    if (conf -> checkInterval != NULL) free(conf -> checkInterval);
+    if (conf -> parseInterval != NULL) free(conf -> parseInterval);
+    if (conf -> sortOnReboot != NULL) free(conf -> sortOnReboot);
+    if (conf -> debugLog != NULL) free(conf -> debugLog);
+    if (conf -> defaultDirPath != NULL) free(conf -> defaultDirPath);
+    if (conf -> targetsPath != NULL) free(conf -> targetsPath);
+    if (conf -> check != NULL) free(conf -> check);
+
+    free(conf);
+    return malloc(sizeof(struct config));
+}
+
 
