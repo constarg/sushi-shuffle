@@ -73,7 +73,7 @@ void parseData(struct config* conf, char* buffer) {
 }
 
 void* getValueByKey(char buffer[], char key[], int isInteger) {
-    char *tmp = NULL;
+    char* tmp = NULL;
     tmp = malloc(sizeof(char) * strlen(buffer));
     strcpy(tmp, buffer);
     char* locationOnConf = strstr(tmp, key);
