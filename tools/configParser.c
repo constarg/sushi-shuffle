@@ -33,13 +33,17 @@
 #define FAILED_TO_CLOSE "Failed to close config file"
 
 
-void parseData(struct config*, char*);
-char** getDependencies(char*, char*);
-int countTargets(const char*);
-int hasParseError(const char*, const char*, int, int);
-void* getValueByKey(char[], char*,int);
+void parseData(struct config *, char *);
 
-int getConfig(struct config* conf) {
+char **getDependencies(char *, char *);
+
+int countTargets(const char *);
+
+int hasParseError(const char *, const char *, int, int);
+
+void *getValueByKey(char[], char *, int);
+
+int getConfig(struct config *conf) {
     // get the file descriptor of config file.
     int confFD = open(CONFIG_PATH, O_RDONLY);
     char *buffer = NULL;
@@ -53,7 +57,8 @@ int getConfig(struct config* conf) {
     // make the size of the buffer equal to the config file size.
     buffer = malloc(sizeof(char) * fileStats.st_size);
     // error handling.
-    if (read(confFD, buffer, fileStats.st_size) == -1) return makeLog(FAILED_TO_READ, strerror(errno), NORMAL_LOG, ERROR);
+    if (read(confFD, buffer, fileStats.st_size) == -1)
+        return makeLog(FAILED_TO_READ, strerror(errno), NORMAL_LOG, ERROR);
     if (close(confFD)) return makeLog(FAILED_TO_CLOSE, strerror(errno), NORMAL_LOG, ERROR);
 
     makeLog(SUCCESS_LOAD, NULL, NORMAL_LOG, SUCCESS);
@@ -62,62 +67,62 @@ int getConfig(struct config* conf) {
     return 0;
 }
 
-void parseData(struct config* conf, char* buffer) {
-    conf -> checkInterval = (int*) getValueByKey(buffer, CHECK_INTERVAL, 1);
-    conf -> parseInterval = (int*) getValueByKey(buffer, PARSE_INTERVAL, 1);
-    conf -> sortOnReboot = (int*) getValueByKey(buffer, SORT_ON_REBOOT, 1);
-    conf -> debugLog = (int*) getValueByKey(buffer, DEBUG, 1);
-    conf -> defaultDirPath = (char*) getValueByKey(buffer, DEFAULT_DIR_PATH, 0);
-    conf -> targetsPath = getDependencies(buffer, TARGETS);
-    conf -> check = getDependencies(buffer, CHECK);
+void parseData(struct config *conf, char *buffer) {
+    conf->checkInterval = (int *) getValueByKey(buffer, CHECK_INTERVAL, 1);
+    conf->parseInterval = (int *) getValueByKey(buffer, PARSE_INTERVAL, 1);
+    conf->sortOnReboot = (int *) getValueByKey(buffer, SORT_ON_REBOOT, 1);
+    conf->debugLog = (int *) getValueByKey(buffer, DEBUG, 1);
+    conf->defaultDirPath = (char *) getValueByKey(buffer, DEFAULT_DIR_PATH, 0);
+    conf->targetsPath = getDependencies(buffer, TARGETS);
+    conf->check = getDependencies(buffer, CHECK);
 }
 
-void* getValueByKey(char buffer[], char key[], int isInteger) {
-    char* tmp = NULL;
+void *getValueByKey(char buffer[], char key[], int isInteger) {
+    char *tmp = NULL;
     tmp = malloc(sizeof(char) * strlen(buffer));
     strcpy(tmp, buffer);
-    char* locationOnConf = strstr(tmp, key);
+    char *locationOnConf = strstr(tmp, key);
     char errorMessage[50] = ERROR_MESSAGE;
     char successMessage[50] = SUCCESS_MESSAGE;
     strcat(errorMessage, key);
     strcat(successMessage, key);
     int keyLen = (int) strlen(key);
 
-    if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen+1)) return NULL;
+    if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen + 1)) return NULL;
 
     strtok(locationOnConf, " ");
-    char* value = strtok(NULL, "\n");
+    char *value = strtok(NULL, "\n");
 
     if (!isInteger) {
-        if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen+1)) return NULL;
-        char* returnedValue = malloc(sizeof(char) * strlen(value));
+        if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen + 1)) return NULL;
+        char *returnedValue = malloc(sizeof(char) * strlen(value));
         strcpy(returnedValue, value);
         makeLog(successMessage, NULL, NORMAL_LOG, SUCCESS);
         free(tmp);
         return returnedValue;
     }
-    if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen+1)) return NULL;
+    if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen + 1)) return NULL;
     long tmpInteger = strtol(value, &value, 10);
-    int* integerValue = malloc(sizeof(int));
+    int *integerValue = malloc(sizeof(int));
     *integerValue = (int) tmpInteger;
     free(tmp);
     makeLog(successMessage, NULL, NORMAL_LOG, SUCCESS);
     return integerValue;
 }
 
-char** getDependencies(char* buffer, char* dependency) {
-    char* locationOnConf = strstr(buffer, dependency);
+char **getDependencies(char *buffer, char *dependency) {
+    char *locationOnConf = strstr(buffer, dependency);
     char errorMessage[20] = ERROR_MESSAGE;
     char successMessage[20] = SUCCESS_MESSAGE;
     strcat(errorMessage, dependency);
     strcat(successMessage, dependency);
-    if (hasParseError(locationOnConf, errorMessage,0,0)) return NULL;
+    if (hasParseError(locationOnConf, errorMessage, 0, 0)) return NULL;
 
-    char* splitter = "\n";
+    char *splitter = "\n";
     int counter = countTargets(locationOnConf);
-    char* currentDependency = strtok(locationOnConf, splitter);
+    char *currentDependency = strtok(locationOnConf, splitter);
 
-    char** dependencies = malloc(sizeof(char*) * counter);
+    char **dependencies = malloc(sizeof(char *) * counter);
     counter = 0;
 
     while (currentDependency != NULL) {
@@ -130,7 +135,7 @@ char** getDependencies(char* buffer, char* dependency) {
     return dependencies;
 }
 
-int countTargets(const char* locationOfTargets) {
+int countTargets(const char *locationOfTargets) {
     int counter = 0;
     for (int i = 0; locationOfTargets[i] != '\0'; i++) {
         if (locationOfTargets[i] == '\n') ++counter;
@@ -139,7 +144,7 @@ int countTargets(const char* locationOfTargets) {
     return counter;
 }
 
-int hasParseError(const char* locationOnConf, const char* message, int index1, int index2) {
+int hasParseError(const char *locationOnConf, const char *message, int index1, int index2) {
     if (locationOnConf == NULL) return makeLog(message, PARSE_FAILED_NO_FIELD, NORMAL_LOG, ERROR);
     else if (locationOnConf[index1] == '\n') return makeLog(message, PARSE_FAILED_NOTHING, NORMAL_LOG, ERROR);
     else if (locationOnConf[index2] == '\n') return makeLog(message, PARSE_FAILED_EMPTY, NORMAL_LOG, ERROR);
@@ -147,14 +152,14 @@ int hasParseError(const char* locationOnConf, const char* message, int index1, i
     return 0;
 }
 
-struct config* clearConfig(struct config* conf) {
-    if (conf -> checkInterval != NULL) free(conf -> checkInterval);
-    if (conf -> parseInterval != NULL) free(conf -> parseInterval);
-    if (conf -> sortOnReboot != NULL) free(conf -> sortOnReboot);
-    if (conf -> debugLog != NULL) free(conf -> debugLog);
-    if (conf -> defaultDirPath != NULL) free(conf -> defaultDirPath);
-    if (conf -> targetsPath != NULL) free(conf -> targetsPath);
-    if (conf -> check != NULL) free(conf -> check);
+struct config *clearConfig(struct config *conf) {
+    if (conf->checkInterval != NULL) free(conf->checkInterval);
+    if (conf->parseInterval != NULL) free(conf->parseInterval);
+    if (conf->sortOnReboot != NULL) free(conf->sortOnReboot);
+    if (conf->debugLog != NULL) free(conf->debugLog);
+    if (conf->defaultDirPath != NULL) free(conf->defaultDirPath);
+    if (conf->targetsPath != NULL) free(conf->targetsPath);
+    if (conf->check != NULL) free(conf->check);
 
     free(conf);
     return malloc(sizeof(struct config));

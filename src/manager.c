@@ -26,8 +26,10 @@
 #define RETRY_INTERVAL 10
 
 _Noreturn void *parse(void *);
+
 _Noreturn void *moveToDir(void *);
-void checkMoveFile(char*, char*);
+
+void checkMoveFile(char *, char *);
 
 struct config *conf;
 pthread_mutex_t lock;
@@ -39,8 +41,10 @@ void run() {
 
     if (pthread_mutex_init(&lock, NULL) != 0) makeLog(FAILED_TO_INITIALIZE_MUTEX, strerror(errno), DEBUG_LOG, WARN);
 
-    if (pthread_create(&parseThread, NULL, parse, NULL) != 0) makeLog(FAILED_TO_CREATE_THREAD, strerror(errno), DEBUG_LOG, WARN);
-    if (pthread_create(&moveToDirThread, NULL, moveToDir, NULL) != 0) makeLog(FAILED_TO_CREATE_THREAD, strerror(errno), DEBUG_LOG, WARN);
+    if (pthread_create(&parseThread, NULL, parse, NULL) != 0)
+        makeLog(FAILED_TO_CREATE_THREAD, strerror(errno), DEBUG_LOG, WARN);
+    if (pthread_create(&moveToDirThread, NULL, moveToDir, NULL) != 0)
+        makeLog(FAILED_TO_CREATE_THREAD, strerror(errno), DEBUG_LOG, WARN);
 
     pthread_join(parseThread, NULL);
     pthread_join(moveToDirThread, NULL);
@@ -69,10 +73,10 @@ void *parse(void *arg) {
 
 void *moveToDir(void *arg) {
     struct dirent *files;
-    char* currDir;
-    char* path;
+    char *currDir;
+    char *path;
     int interval;
-    DIR* dir;
+    DIR *dir;
 
     while (TRUE) {
         pthread_mutex_lock(&lock);
@@ -85,7 +89,7 @@ void *moveToDir(void *arg) {
             dir = opendir(currDir);
 
             if (dir == NULL) {
-                if ( *(conf->debugLog) == 1) makeLog(FAILED_TO_OPEN_DIR, strerror(errno), DEBUG_LOG, ERROR);
+                if (*(conf->debugLog) == 1) makeLog(FAILED_TO_OPEN_DIR, strerror(errno), DEBUG_LOG, ERROR);
                 continue;
             }
 
@@ -108,11 +112,11 @@ void *moveToDir(void *arg) {
     }
 }
 
-void checkMoveFile(char* filepath, char* file) {
-    char* currExt;
-    char* splitter = " ";
-    char* checkType;
-    char* moveTo;
+void checkMoveFile(char *filepath, char *file) {
+    char *currExt;
+    char *splitter = " ";
+    char *checkType;
+    char *moveTo;
 
     for (int target = 1; strcmp(conf->targetsPath[target], "[done_targets]") != 0; target++) {
         currExt = alloca(sizeof(char) * strlen(conf->targetsPath[target]));
@@ -128,7 +132,7 @@ void checkMoveFile(char* filepath, char* file) {
         strcat(moveTo, file);
 
         if (rename(filepath, moveTo) != 0) {
-            if ( *(conf->debugLog) == 1) makeLog(FAILED_TO_MOVE_FILE, strerror(errno), DEBUG_LOG, ERROR);
+            if (*(conf->debugLog) == 1) makeLog(FAILED_TO_MOVE_FILE, strerror(errno), DEBUG_LOG, ERROR);
             return;
         }
         makeLog(SUCCESS_MOVE, NULL, NORMAL_LOG, SUCCESS);
