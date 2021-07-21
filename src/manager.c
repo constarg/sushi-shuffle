@@ -21,7 +21,9 @@
 _Noreturn void *parse(void *);
 _Noreturn void *moveToDir(void *);
 void checkMoveFile(char*);
+
 struct config *conf;
+pthread_mutex_t lock;
 
 void run() {
     conf = malloc(sizeof(struct config));
@@ -31,12 +33,14 @@ void run() {
     pthread_create(&parseThread, NULL, parse, NULL);
     pthread_create(&moveToDirThread, NULL, moveToDir, NULL);
 
-    pthread_exit(NULL);
+    pthread_join(parseThread, NULL);
+    pthread_join(moveToDirThread, NULL);
 }
 
 void *parse(void *arg) {
 
     while (TRUE) {
+        pthread_mutex_lock(&lock);
         conf = clearConfig(conf);
         if (getConfig(conf) == -1) makeLog(PARSER_FAILED, NULL, NORMAL_LOG, WARN);
 
@@ -46,6 +50,7 @@ void *parse(void *arg) {
             continue;
         }
 
+        pthread_mutex_unlock(&lock);
         sleep(*(conf->parseInterval));
     }
 }
@@ -58,6 +63,7 @@ void *moveToDir(void *arg) {
     DIR* dir;
 
     while (TRUE) {
+        pthread_mutex_lock(&lock);
         if (conf->check == NULL) {
             sleep(RETRY_INTERVAL);
             continue;
@@ -75,12 +81,14 @@ void *moveToDir(void *arg) {
                     path = malloc(sizeof(char) * (strlen(currDir) + strlen(files->d_name)));
                     strcpy(path, currDir);
                     strcat(path, files->d_name);
+                    printf("%s\n", path);
                     // TODO move the to the desire dir.
                     free(path);
                 }
             }
             closedir(dir);
         }
+        pthread_mutex_unlock(&lock);
         sleep(*(conf->checkInterval));
     }
 }
