@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <dirent.h>
+#include <errno.h>
 
 #include "manager.h"
 #include "../tools/configParser.h"
@@ -14,6 +15,8 @@
 #define PARSER_FAILED "Parser Failed"
 #define PARSE_INTERVAL_NOT_FOUND "Parse interval not found, set default"
 #define FAILED_TO_OPEN_DIR "Parser Failed to open a check dir."
+#define FAILED_TO_INITIALIZE_MUTEX "Failed to initialize mutex."
+#define FAILED_TO_CREATE_THREAD "Failed to create thread."
 
 #define DEFAULT_PARSE_INTERVAL 5000
 #define RETRY_INTERVAL 3
@@ -30,11 +33,14 @@ void run() {
     pthread_t moveToDirThread;
     pthread_t parseThread;
 
-    pthread_create(&parseThread, NULL, parse, NULL);
-    pthread_create(&moveToDirThread, NULL, moveToDir, NULL);
+    if (pthread_mutex_init(&lock, NULL) != 0) makeLog(FAILED_TO_INITIALIZE_MUTEX, strerror(errno), DEBUG_LOG, WARN);
+
+    if (pthread_create(&parseThread, NULL, parse, NULL) != 0) makeLog(FAILED_TO_CREATE_THREAD, strerror(errno), DEBUG_LOG, WARN);
+    if (pthread_create(&moveToDirThread, NULL, parse, NULL) != 0) makeLog(FAILED_TO_CREATE_THREAD, strerror(errno), DEBUG_LOG, WARN);
 
     pthread_join(parseThread, NULL);
     pthread_join(moveToDirThread, NULL);
+    pthread_mutex_destroy(&lock);
 }
 
 void *parse(void *arg) {
@@ -68,12 +74,14 @@ void *moveToDir(void *arg) {
             sleep(RETRY_INTERVAL);
             continue;
         }
-        //sprintf("%d ", *(conf->checkNumber));
         for (int currCheck = 1; strcmp(conf->check[currCheck], "[targets]") != 0; currCheck++) {
             currDir = conf->check[currCheck];
             dir = opendir(currDir);
 
-            if (dir == NULL) makeLog(FAILED_TO_OPEN_DIR, NULL, DEBUG_LOG, ERROR);
+            if (dir == NULL) {
+                makeLog(FAILED_TO_OPEN_DIR, strerror(errno), DEBUG_LOG, ERROR);
+                continue;
+            }
 
             while ((files = readdir(dir)) != NULL) {
 
@@ -81,7 +89,6 @@ void *moveToDir(void *arg) {
                     path = malloc(sizeof(char) * (strlen(currDir) + strlen(files->d_name)));
                     strcpy(path, currDir);
                     strcat(path, files->d_name);
-                    printf("%s\n", path);
                     // TODO move the to the desire dir.
                     free(path);
                 }
