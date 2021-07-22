@@ -97,12 +97,11 @@ void *moveToDir(void *arg) {
             while ((files = readdir(dir)) != NULL) {
 
                 if (files->d_type == DT_REG && files->d_name[0] != '.') {
-                    path = calloc((strlen(currDir) + strlen(files->d_name)), sizeof(char));
+                    path = realloc(path, sizeof(char) * (strlen(currDir) + strlen(files->d_name)));
                     strcpy(path, currDir);
                     strcat(path, files->d_name);
 
                     checkMoveFile(path, files->d_name);
-                    free(path);
                 }
             }
             closedir(dir);
