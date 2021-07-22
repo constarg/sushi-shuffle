@@ -4,7 +4,6 @@
 struct config {
     int *checkInterval;
     int *parseInterval;
-    int *sortOnReboot;
     int *debugLog;
     char *defaultDirPath;
     char **targetsPath;
