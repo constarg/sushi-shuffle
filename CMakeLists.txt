@@ -11,6 +11,7 @@ file(MAKE_DIRECTORY /home/$ENV{USER}/.local/share/file_sorter/)
 file(MAKE_DIRECTORY /home/$ENV{USER}/.local/share/file_sorter/config/)
 file(MAKE_DIRECTORY /home/$ENV{USER}/default_sorter_path/)
 file(MAKE_DIRECTORY config/)
+file(MAKE_DIRECTORY service)
 
 file(WRITE config/config.conf
         [basic_config]\n
@@ -27,5 +28,20 @@ file(WRITE config/config.conf
         \n
         [done_targets])
 
-install(DIRECTORY config/ DESTINATION /home/$ENV{USER}/.local/share/file_sorter/config)
+file(WRITE service/file-sorter.service
+        [Unit]\n
+        Description=File\ sorter\ helps\ you\ to\ organize\ your\ files.\n
+        \n
+        [Service]\n
+        Type=simple\n
+        ExecStart=/bin/bash\ -c\ /usr/bin/file-sorter\n
+        Restart=on-failure\n
+        Group=$ENV{USER}\n
+        \n
+        [Install]\n
+        WantedBy=multi-user.target\n
+)
+
+install(FILES config/config.conf PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ WORLD_EXECUTE WORLD_READ DESTINATION /home/$ENV{USER}/.local/share/file_sorter/config/)
+install(FILES service/file-sorter.service PERMISSIONS OWNER_EXECUTE OWNER_READ WORLD_EXECUTE WORLD_READ DESTINATION /home/$ENV{USER}/.config/systemd/user/)
 install(FILES build/file-sorter PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE DESTINATION /usr/bin/)
