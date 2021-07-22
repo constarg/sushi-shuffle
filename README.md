@@ -1,4 +1,3 @@
-
 # Introduction
 This program transfers all files outside of folders 
 to the specific folders to which they belong. 
