@@ -23,13 +23,17 @@
 #define SUCCESS_MOVE "File moved successfully to target directory."
 
 #define DEFAULT_PARSE_INTERVAL 5000
-#define RETRY_INTERVAL 10
+#define INITIAL_CHECK_WAIT 5
 
 _Noreturn void *parse(void *);
 
 _Noreturn void *moveToDir(void *);
 
 void checkMoveFile(char *, char *);
+
+char *extractFileExtensionFromTarget(char *);
+
+char *extractPathFromTarget(char *, char *);
 
 struct config *conf;
 pthread_mutex_t lock;
@@ -72,18 +76,15 @@ void *parse(void *arg) {
 
 
 void *moveToDir(void *arg) {
-    struct dirent *files;
-    char *currDir;
-    char *path;
+    sleep(INITIAL_CHECK_WAIT); // wait to make the first parse.
+    struct dirent *files = NULL;
+    char *currDir = NULL;
+    char *path = NULL;
     int interval;
-    DIR *dir;
+    DIR *dir = NULL;
 
     while (TRUE) {
         pthread_mutex_lock(&lock);
-        if (conf->check == NULL) {
-            sleep(RETRY_INTERVAL);
-            continue;
-        }
         for (int currCheck = 1; strcmp(conf->check[currCheck], "[done_check]") != 0; currCheck++) {
             currDir = conf->check[currCheck];
             dir = opendir(currDir);
@@ -99,9 +100,8 @@ void *moveToDir(void *arg) {
                     path = malloc(sizeof(char) * (strlen(currDir) + strlen(files->d_name)));
                     strcpy(path, currDir);
                     strcat(path, files->d_name);
-                    checkMoveFile(path, files->d_name);
 
-                    free(path);
+                    checkMoveFile(path, files->d_name);
                 }
             }
             closedir(dir);
@@ -113,29 +113,71 @@ void *moveToDir(void *arg) {
 }
 
 void checkMoveFile(char *filepath, char *file) {
-    char *currExt;
-    char *splitter = " ";
-    char *checkType;
-    char *moveTo;
+    char *currExt = NULL;
+    char *checkExt = NULL;
+    char *moveFileTo = NULL;
+    int extLen;
 
     for (int target = 1; strcmp(conf->targetsPath[target], "[done_targets]") != 0; target++) {
-        currExt = alloca(sizeof(char) * strlen(conf->targetsPath[target]));
-        strcpy(currExt, conf->targetsPath[target]);
-        currExt = strtok(currExt, splitter);
+        currExt = extractFileExtensionFromTarget(conf->targetsPath[target]);
+        extLen = (int) strlen(currExt);
 
-        checkType = strstr(file, currExt);
-        if (checkType == NULL) continue;
-
-        moveTo = alloca(sizeof(char) * strlen(conf->targetsPath[target]));
-        strcpy(moveTo, conf->targetsPath[target]);
-        moveTo = strchr(moveTo, '/');
-        strcat(moveTo, file);
-
-        if (rename(filepath, moveTo) != 0) {
-            if (*(conf->debugLog) == 1) makeLog(FAILED_TO_MOVE_FILE, strerror(errno), DEBUG_LOG, ERROR);
+        checkExt = strstr(file, currExt);
+        if (checkExt == NULL || checkExt[extLen] != '\0') {
+            moveFileTo = malloc(sizeof(char) * (strlen(filepath) + strlen(file)));
+            strcpy(moveFileTo, conf->defaultDirPath);
+            strcat(moveFileTo, file);
+            if (rename(filepath, moveFileTo) != 0) {
+                if (*(conf->debugLog) == 1) makeLog(FAILED_TO_MOVE_FILE, strerror(errno), DEBUG_LOG, ERROR);
+            }
+            free(currExt);
+            free(moveFileTo);
+            makeLog(SUCCESS_MOVE, NULL, NORMAL_LOG, SUCCESS);
             return;
         }
+        moveFileTo = extractPathFromTarget(conf->targetsPath[target], file);
+        // insert the file into the path as destination name.
+        strcat(moveFileTo, file);
+
+        if (rename(filepath, moveFileTo) != 0) {
+            if (*(conf->debugLog) == 1) makeLog(FAILED_TO_MOVE_FILE, strerror(errno), DEBUG_LOG, ERROR);
+            free(currExt);
+            free(moveFileTo);
+            return;
+        }
+        free(currExt);
+        free(moveFileTo);
         makeLog(SUCCESS_MOVE, NULL, NORMAL_LOG, SUCCESS);
+
         return;
     }
+}
+
+char *extractFileExtensionFromTarget(char *target) {
+    char *extension = NULL;
+    char *tmp = NULL;
+    char *splitter = " ";
+
+    tmp = malloc(sizeof(char) * strlen(target));
+    strcpy(tmp, target);
+    strtok(tmp, splitter);
+    // remove the redundant bytes.
+    extension = malloc(sizeof(char) * strlen(tmp));
+    strcpy(extension, tmp);
+    free(tmp);
+
+    return extension;
+}
+
+char *extractPathFromTarget(char *target, char *filename) {
+    char *path = NULL;
+    char *tmp = NULL;
+
+    tmp = malloc(sizeof(char) * strlen(target));
+    strcpy(tmp, target);
+    path = malloc(sizeof(char) * (strlen(strchr(tmp, '/') + strlen(filename))));
+    strcpy(path, strchr(tmp, '/'));
+    free(tmp);
+
+    return path;
 }

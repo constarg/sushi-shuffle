@@ -9,11 +9,10 @@
 #include "configParser.h"
 #include "logger.h"
 
-#define CONFIG_PATH "../config/config.conf"
+#define CONFIG_PATH "/.local/share/file_sorter/config/config.conf"
 
 #define CHECK_INTERVAL "checkInterval"
 #define PARSE_INTERVAL "parseInterval"
-#define SORT_ON_REBOOT "sortOnReboot"
 #define DEBUG "debugLog"
 #define DEFAULT_DIR_PATH "defaultDirPath"
 #define TARGETS "[targets]"
@@ -44,8 +43,13 @@ int hasParseError(const char *, const char *, int, int);
 void *getValueByKey(char[], char *, int);
 
 int getConfig(struct config *conf) {
-    // get the file descriptor of config file.
-    int confFD = open(CONFIG_PATH, O_RDONLY);
+    char* username = getlogin();
+    char* configPath = alloca(sizeof(char) * (strlen(CONFIG_PATH) + strlen(username) + strlen("home")));
+    strcpy(configPath, "/home/");
+    strcat(configPath, username);
+    strcat(configPath, CONFIG_PATH);
+
+    int confFD = open(configPath, O_RDONLY);
     char *buffer = NULL;
 
     // error handling.
@@ -53,7 +57,7 @@ int getConfig(struct config *conf) {
 
     struct stat fileStats;
 
-    if (lstat(CONFIG_PATH, &fileStats) == -1) return makeLog(FAILED_TO_READ_SIZE, strerror(errno), NORMAL_LOG, ERROR);
+    if (lstat(configPath, &fileStats) == -1) return makeLog(FAILED_TO_READ_SIZE, strerror(errno), NORMAL_LOG, ERROR);
     // make the size of the buffer equal to the config file size.
     buffer = malloc(sizeof(char) * fileStats.st_size);
     // error handling.
@@ -70,7 +74,6 @@ int getConfig(struct config *conf) {
 void parseData(struct config *conf, char *buffer) {
     conf->checkInterval = (int *) getValueByKey(buffer, CHECK_INTERVAL, 1);
     conf->parseInterval = (int *) getValueByKey(buffer, PARSE_INTERVAL, 1);
-    conf->sortOnReboot = (int *) getValueByKey(buffer, SORT_ON_REBOOT, 1);
     conf->debugLog = (int *) getValueByKey(buffer, DEBUG, 1);
     conf->defaultDirPath = (char *) getValueByKey(buffer, DEFAULT_DIR_PATH, 0);
     conf->targetsPath = getDependencies(buffer, TARGETS);
@@ -155,7 +158,6 @@ int hasParseError(const char *locationOnConf, const char *message, int index1, i
 struct config *clearConfig(struct config *conf) {
     if (conf->checkInterval != NULL) free(conf->checkInterval);
     if (conf->parseInterval != NULL) free(conf->parseInterval);
-    if (conf->sortOnReboot != NULL) free(conf->sortOnReboot);
     if (conf->debugLog != NULL) free(conf->debugLog);
     if (conf->defaultDirPath != NULL) free(conf->defaultDirPath);
     if (conf->targetsPath != NULL) free(conf->targetsPath);
