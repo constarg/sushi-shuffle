@@ -97,11 +97,12 @@ void *moveToDir(void *arg) {
             while ((files = readdir(dir)) != NULL) {
 
                 if (files->d_type == DT_REG && files->d_name[0] != '.') {
-                    path = malloc(sizeof(char) * (strlen(currDir) + strlen(files->d_name)));
+                    path = calloc((strlen(currDir) + strlen(files->d_name)), sizeof(char));
                     strcpy(path, currDir);
                     strcat(path, files->d_name);
 
                     checkMoveFile(path, files->d_name);
+                    free(path);
                 }
             }
             closedir(dir);
@@ -118,23 +119,44 @@ void checkMoveFile(char *filepath, char *file) {
     char *moveFileTo = NULL;
     int extLen;
 
+    if (strcmp(conf->targetsPath[1], "[done_targets]") == 0) {
+        moveFileTo = calloc((strlen(filepath) + strlen(file)), sizeof(char));
+        strcpy(moveFileTo, conf->defaultDirPath);
+        strcat(moveFileTo, file);
+        if (rename(filepath, moveFileTo) != 0)
+            if (*(conf->debugLog) == 1) makeLog(FAILED_TO_MOVE_FILE, strerror(errno), DEBUG_LOG, ERROR);
+
+        free(moveFileTo);
+        makeLog(SUCCESS_MOVE, NULL, NORMAL_LOG, SUCCESS);
+        return;
+    }
+
     for (int target = 1; strcmp(conf->targetsPath[target], "[done_targets]") != 0; target++) {
         currExt = extractFileExtensionFromTarget(conf->targetsPath[target]);
         extLen = (int) strlen(currExt);
 
         checkExt = strstr(file, currExt);
-        if (checkExt == NULL || checkExt[extLen] != '\0') {
-            moveFileTo = malloc(sizeof(char) * (strlen(filepath) + strlen(file)));
+        printf("curr file %s\n", file);
+        if (strcmp(conf->targetsPath[target + 1], "[done_targets]") == 0) {
+            moveFileTo = calloc((strlen(filepath) + strlen(file)), sizeof(char));
             strcpy(moveFileTo, conf->defaultDirPath);
             strcat(moveFileTo, file);
             if (rename(filepath, moveFileTo) != 0) {
                 if (*(conf->debugLog) == 1) makeLog(FAILED_TO_MOVE_FILE, strerror(errno), DEBUG_LOG, ERROR);
+                free(currExt);
+                free(moveFileTo);
+                return;
             }
             free(currExt);
             free(moveFileTo);
             makeLog(SUCCESS_MOVE, NULL, NORMAL_LOG, SUCCESS);
             return;
         }
+        else if (checkExt == NULL || checkExt[extLen] != '\0') {
+            free(currExt);
+            continue;
+        }
+
         moveFileTo = extractPathFromTarget(conf->targetsPath[target], file);
         // insert the file into the path as destination name.
         strcat(moveFileTo, file);
@@ -148,7 +170,6 @@ void checkMoveFile(char *filepath, char *file) {
         free(currExt);
         free(moveFileTo);
         makeLog(SUCCESS_MOVE, NULL, NORMAL_LOG, SUCCESS);
-
         return;
     }
 }
@@ -158,13 +179,13 @@ char *extractFileExtensionFromTarget(char *target) {
     char *tmp = NULL;
     char *splitter = " ";
 
-    tmp = malloc(sizeof(char) * strlen(target));
+    tmp = alloca(sizeof(char) * strlen(target));
     strcpy(tmp, target);
     strtok(tmp, splitter);
+
     // remove the redundant bytes.
     extension = malloc(sizeof(char) * strlen(tmp));
     strcpy(extension, tmp);
-    free(tmp);
 
     return extension;
 }
@@ -173,11 +194,10 @@ char *extractPathFromTarget(char *target, char *filename) {
     char *path = NULL;
     char *tmp = NULL;
 
-    tmp = malloc(sizeof(char) * strlen(target));
+    tmp = alloca(sizeof(char) * strlen(target));
     strcpy(tmp, target);
-    path = malloc(sizeof(char) * (strlen(strchr(tmp, '/') + strlen(filename))));
+    path = calloc((strlen(strchr(tmp, '/') + strlen(filename))), sizeof(char));
     strcpy(path, strchr(tmp, '/'));
-    free(tmp);
 
     return path;
 }

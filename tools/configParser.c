@@ -44,6 +44,7 @@ void *getValueByKey(char[], char *, int);
 
 int getConfig(struct config *conf) {
     char* username = getlogin();
+    printf("%s ", username);
     char* configPath = alloca(sizeof(char) * (strlen(CONFIG_PATH) + strlen(username) + strlen("home")));
     strcpy(configPath, "/home/");
     strcat(configPath, username);
