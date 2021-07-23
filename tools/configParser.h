@@ -8,6 +8,8 @@ struct config {
     char *defaultDirPath;
     char **targetsPath;
     char **check;
+    int checkNumber;
+    int targetNumber;
 };
 
 extern int getConfig(struct config *conf);
