@@ -32,29 +32,29 @@
 #define FAILED_TO_CLOSE "Failed to close config file"
 
 
-void parseData(struct config *, char *);
+void parseData(struct config *, const char *, size_t bufferSize);
 
-char **getDependencies(char *, char *);
+char **getDependencies(const char *, char *, int*);
 
-int countTargets(const char *);
+int countTargets(char *, int);
 
-int hasParseError(const char *, const char *, int, int);
+int getDependencyLength(const char *);
 
-void *getValueByKey(char[], char *, int);
+int getValueByKeyValidator(const char *, const char *, int, int);
+
+void *getValueByKey(const char*, char *, int, size_t);
 
 int getConfig(struct config *conf) {
     char* username = getlogin();
-    char* configPath = alloca(sizeof(char) * (strlen(CONFIG_PATH) + strlen(username) + strlen("home")));
+    char* configPath = malloc(sizeof(char) * (strlen(CONFIG_PATH) + strlen(username) + strlen("home") + 3));
     strcpy(configPath, "/home/");
     strcat(configPath, username);
     strcat(configPath, CONFIG_PATH);
 
     int confFD = open(configPath, O_RDONLY);
     char *buffer = NULL;
-
     // error handling.
     if (confFD == -1) return makeLog(FAILED_TO_OPEN, strerror(errno), NORMAL_LOG, ERROR);
-
     struct stat fileStats;
 
     if (lstat(configPath, &fileStats) == -1) return makeLog(FAILED_TO_READ_SIZE, strerror(errno), NORMAL_LOG, ERROR);
@@ -63,91 +63,111 @@ int getConfig(struct config *conf) {
     // error handling.
     if (read(confFD, buffer, fileStats.st_size) == -1)
         return makeLog(FAILED_TO_READ, strerror(errno), NORMAL_LOG, ERROR);
+
     if (close(confFD)) return makeLog(FAILED_TO_CLOSE, strerror(errno), NORMAL_LOG, ERROR);
 
     makeLog(SUCCESS_LOAD, NULL, NORMAL_LOG, SUCCESS);
-    parseData(conf, buffer);
+    parseData(conf, buffer, fileStats.st_size);
+    free(configPath);
     free(buffer);
     return 0;
 }
 
-void parseData(struct config *conf, char *buffer) {
-    conf->checkInterval = (int *) getValueByKey(buffer, CHECK_INTERVAL, 1);
-    conf->parseInterval = (int *) getValueByKey(buffer, PARSE_INTERVAL, 1);
-    conf->debugLog = (int *) getValueByKey(buffer, DEBUG, 1);
-    conf->defaultDirPath = (char *) getValueByKey(buffer, DEFAULT_DIR_PATH, 0);
-    conf->targetsPath = getDependencies(buffer, TARGETS);
-    conf->check = getDependencies(buffer, CHECK);
+void parseData(struct config *conf, const char *buffer, size_t bufferSize) {
+    conf->checkInterval = (int *) getValueByKey(buffer, CHECK_INTERVAL, 1, bufferSize);
+    conf->parseInterval = (int *) getValueByKey(buffer, PARSE_INTERVAL, 1, bufferSize);
+    conf->debugLog = (int *) getValueByKey(buffer, DEBUG, 1, bufferSize);
+    conf->defaultDirPath = (char *) getValueByKey(buffer, DEFAULT_DIR_PATH, 0, bufferSize);
+    conf->targetsPath = getDependencies(buffer, TARGETS, &conf->targetNumber);
+    conf->check = getDependencies(buffer, CHECK, &conf->checkNumber);
 }
 
-void *getValueByKey(char buffer[], char key[], int isInteger) {
+void *getValueByKey(const char* buffer, char* key, int isInteger, size_t bufferSize) {
     char *tmp = NULL;
-    tmp = malloc(sizeof(char) * strlen(buffer));
-    strcpy(tmp, buffer);
+    tmp = malloc(sizeof(char) * (bufferSize));
+    strncpy(tmp, buffer, bufferSize);
+
     char *locationOnConf = strstr(tmp, key);
     char errorMessage[50] = ERROR_MESSAGE;
     char successMessage[50] = SUCCESS_MESSAGE;
     strcat(errorMessage, key);
     strcat(successMessage, key);
-    int keyLen = (int) strlen(key);
 
-    if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen + 1)) return NULL;
+    int keyLen = (int) strlen(key);
+    if (getValueByKeyValidator(locationOnConf, errorMessage, keyLen, keyLen + 1)) return NULL;
 
     strtok(locationOnConf, " ");
     char *value = strtok(NULL, "\n");
 
     if (!isInteger) {
-        if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen + 1)) return NULL;
-        char *returnedValue = malloc(sizeof(char) * strlen(value));
-        strcpy(returnedValue, value);
+        if (getValueByKeyValidator(locationOnConf, errorMessage, keyLen, keyLen + 1)) return NULL;
+        size_t valueLen = strlen(value) + 1;
+        char *returnedValue = malloc(sizeof(char) * valueLen);
+        strncpy(returnedValue, value, valueLen);
         makeLog(successMessage, NULL, NORMAL_LOG, SUCCESS);
         free(tmp);
         return returnedValue;
     }
-    if (hasParseError(locationOnConf, errorMessage, keyLen, keyLen + 1)) return NULL;
+
+    if (getValueByKeyValidator(locationOnConf, errorMessage, keyLen, keyLen + 1)) return NULL;
     long tmpInteger = strtol(value, &value, 10);
     int *integerValue = malloc(sizeof(int));
     *integerValue = (int) tmpInteger;
     free(tmp);
     makeLog(successMessage, NULL, NORMAL_LOG, SUCCESS);
+
     return integerValue;
 }
 
-char **getDependencies(char *buffer, char *dependency) {
-    char *locationOnConf = strstr(buffer, dependency);
+char **getDependencies(const char *buffer, char *dependency, int* number) {
+    int locationLen = getDependencyLength(strstr(buffer, dependency));
+    char *locationOnConf = calloc(locationLen + 1, sizeof(char));
+    strncpy(locationOnConf, strstr(buffer, dependency), locationLen);
+
     char errorMessage[20] = ERROR_MESSAGE;
     char successMessage[20] = SUCCESS_MESSAGE;
     strcat(errorMessage, dependency);
     strcat(successMessage, dependency);
-    if (hasParseError(locationOnConf, errorMessage, 0, 0)) return NULL;
 
     char *splitter = "\n";
-    int counter = countTargets(locationOnConf);
+    int depCounter = countTargets(locationOnConf, locationLen);
+
     char *currentDependency = strtok(locationOnConf, splitter);
-
-    char **dependencies = malloc(sizeof(char *) * counter);
-    counter = 0;
-
-    while (currentDependency != NULL) {
-        dependencies[counter] = currentDependency;
+    char **dependencies = malloc(sizeof(char *) * (depCounter + 1));
+    int saveCounter = 0;
+    size_t tmpLen = 0;
+    // erase garbage.
+    currentDependency = strtok(NULL, splitter);
+    while (currentDependency != NULL && saveCounter < depCounter) {
+        tmpLen = strlen(currentDependency);
+        dependencies[saveCounter] = calloc(tmpLen + 1, sizeof(char));
+        strncpy(dependencies[saveCounter], currentDependency, tmpLen);
         currentDependency = strtok(NULL, splitter);
-        counter++;
+        saveCounter++;
     }
+    *number = depCounter;
 
+    free(locationOnConf);
     makeLog(successMessage, NULL, NORMAL_LOG, SUCCESS);
     return dependencies;
 }
 
-int countTargets(const char *locationOfTargets) {
-    int counter = 0;
-    for (int i = 0; locationOfTargets[i] != '\0'; i++) {
-        if (locationOfTargets[i] == '\n') ++counter;
+int countTargets(char *locationOfTargets, int len) {
+    char* tmpLocation = calloc(len + 1, sizeof(char));
+    strncpy(tmpLocation, locationOfTargets, len);
+    char* tmp = strtok(tmpLocation, "\n");
+
+    int counter = -1;
+    while (tmp != NULL) {
+        tmp = strtok(NULL, "\n");
+        ++counter;
     }
 
+    free(tmpLocation);
     return counter;
 }
 
-int hasParseError(const char *locationOnConf, const char *message, int index1, int index2) {
+int getValueByKeyValidator(const char *locationOnConf, const char *message, int index1, int index2) {
     if (locationOnConf == NULL) return makeLog(message, PARSE_FAILED_NO_FIELD, NORMAL_LOG, ERROR);
     else if (locationOnConf[index1] == '\n') return makeLog(message, PARSE_FAILED_NOTHING, NORMAL_LOG, ERROR);
     else if (locationOnConf[index2] == '\n') return makeLog(message, PARSE_FAILED_EMPTY, NORMAL_LOG, ERROR);
@@ -155,16 +175,30 @@ int hasParseError(const char *locationOnConf, const char *message, int index1, i
     return 0;
 }
 
+int getDependencyLength(const char* dependency) {
+    int len = 1;
+    for (int ln = 1; dependency[ln] != '['; ln++) ++len;
+
+    return len;
+}
+
+void freeDependencies(char** dependencies, int depNumber) {
+    for (int currFree = 0; currFree < depNumber; currFree++) {
+        if (dependencies[currFree] != NULL) free(dependencies[currFree]);
+    }
+    free(dependencies);
+}
+
 struct config *clearConfig(struct config *conf) {
     if (conf->checkInterval != NULL) free(conf->checkInterval);
     if (conf->parseInterval != NULL) free(conf->parseInterval);
     if (conf->debugLog != NULL) free(conf->debugLog);
     if (conf->defaultDirPath != NULL) free(conf->defaultDirPath);
-    if (conf->targetsPath != NULL) free(conf->targetsPath);
-    if (conf->check != NULL) free(conf->check);
+    if (conf->targetsPath != NULL) freeDependencies(conf->targetsPath, conf->targetNumber);
+    if (conf->check != NULL) freeDependencies(conf->check, conf->checkNumber);
 
     free(conf);
-    return malloc(sizeof(struct config));
+    return calloc(1, sizeof(struct config));
 }
 
 
