@@ -129,6 +129,11 @@ char **getDependencies(const char *buffer, char *dependency, int* number) {
     strcat(errorMessage, dependency);
     strcat(successMessage, dependency);
 
+    if (locationLen == 0) {
+        makeLog(errorMessage, PARSE_FAILED_EMPTY, NORMAL_LOG, ERROR);
+        return NULL;
+    }
+
     char *splitter = "\n";
     int depCounter = countTargets(locationOnConf, locationLen);
 
@@ -176,6 +181,8 @@ int getValueByKeyValidator(const char *locationOnConf, const char *message, int 
 }
 
 int getDependencyLength(const char* dependency) {
+    if (dependency == NULL) return 0;
+
     int len = 1;
     for (int ln = 1; dependency[ln] != '['; ln++) ++len;
 
