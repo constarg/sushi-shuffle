@@ -81,7 +81,7 @@ file(WRITE autostart/file-sorter.desktop
         Exec=systemctl\ --user\ start\ file-sorter\n
         Terminal=false)
 
-install(FILES config/config.conf PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ WORLD_EXECUTE WORLD_READ DESTINATION /home/$ENV{USER}/.local/share/file_sorter/config/)
+install(FILES config/config.conf PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ WORLD_WRITE WORLD_READ DESTINATION /home/$ENV{USER}/.local/share/file_sorter/config/)
 install(FILES service/file-sorter.service PERMISSIONS OWNER_EXECUTE OWNER_READ WORLD_EXECUTE WORLD_READ DESTINATION /home/$ENV{USER}/.config/systemd/user/)
 install(FILES autostart/file-sorter.desktop PERMISSIONS OWNER_EXECUTE OWNER_READ OWNER_WRITE GROUP_EXECUTE GROUP_READ GROUP_WRITE WORLD_EXECUTE WORLD_READ WORLD_WRITE DESTINATION /home/$ENV{USER}/.config/autostart/)
 install(FILES build/file-sorter PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE DESTINATION /usr/bin/)
