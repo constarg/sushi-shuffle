@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "logger.h"
+#include "include/logger.h"
 
 #define DEBUG_PREFIX "[DEBUG]"
 #define NORMAL_PREFIX "[LOG]"
@@ -9,33 +9,33 @@
 #define SUCCESS_PREFIX "[SUCCESS]"
 #define WARN_PREFIX "[WARN]"
 
-void showLogs(const char *, const char *, const char *, const char *);
+void show_logs(const char *message, const char *log_type_prefix, const char *seriousness_type, const char *reason);
 
-int makeLog(const char *message, const char *reason, int logType, int seriousness) {
+int make_log(const char *message, const char *reason, int log_type, int seriousness) {
     char *prefix;
-    char *seriousnessType;
-    if (logType == DEBUG_LOG) prefix = DEBUG_PREFIX;
+    char *seriousness_type;
+    if (log_type == DEBUG_LOG) prefix = DEBUG_PREFIX;
     else prefix = NORMAL_PREFIX;
 
-    if (seriousness == ERROR) seriousnessType = ERROR_PREFIX;
-    else if (seriousness == SUCCESS) seriousnessType = SUCCESS_PREFIX;
-    else seriousnessType = WARN_PREFIX;
+    if (seriousness == ERROR) seriousness_type = ERROR_PREFIX;
+    else if (seriousness == SUCCESS) seriousness_type = SUCCESS_PREFIX;
+    else seriousness_type = WARN_PREFIX;
 
-    showLogs(message, prefix, seriousnessType, reason);
+    show_logs(message, prefix, seriousness_type, reason);
 
     if (seriousness == ERROR) return -1;
 
     return 0;
 }
 
-void showLogs(const char *message,
-              const char *logTypePrefix,
-              const char *seriousnessType,
-              const char *reason) {
+void show_logs(const char *message,
+               const char *log_type_prefix,
+               const char *seriousness_type,
+               const char *reason) {
     if (reason) {
-        printf("%s %s %s [reason] %s\n", logTypePrefix, seriousnessType, message, reason);
+        printf("%s %s %s [reason] %s\n", log_type_prefix, seriousness_type, message, reason);
         return;
     }
-    printf("%s %s %s\n", logTypePrefix, seriousnessType, message);
+    printf("%s %s %s\n", log_type_prefix, seriousness_type, message);
 
 }

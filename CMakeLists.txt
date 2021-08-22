@@ -3,23 +3,20 @@ project(File_Sorter_Core C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(file-sorter main.c tools/logger.c tools/logger.h tools/configParser.c tools/configParser.h src/manager.c src/manager.h)
+add_executable(file-sorter main.c tools/logger.c tools/include/logger.h tools/config_parser.c tools/include/config_parser.h src/manager.c src/include/manager.h)
 set(GCC_COVERAGE_COMPILE_FLAGS "-pthread")
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
 
-message("LEAVING /home/$ENV{USER}/.local/share/file_sorter/")
 file(MAKE_DIRECTORY /home/$ENV{USER}/.local/share/file_sorter/)
 
 message("/home/$ENV{USER}/.local/share/file_sorter/ OK")
-message("LEAVING /home/$ENV{USER}/.local/share/file_sorter/config/")
 file(MAKE_DIRECTORY /home/$ENV{USER}/.local/share/file_sorter/config/)
 
 message("/home/$ENV{USER}/.local/share/file_sorter/config/ OK")
-message("LEAVING /home/$ENV{USER}/default_sorter_path/")
 file(MAKE_DIRECTORY /home/$ENV{USER}/default_sorter_path/)
 
 message("/home/$ENV{USER}/default_sorter_path/ OK")
-message("LEAVING config/")
 file(MAKE_DIRECTORY config/)
 
 message("config/ OK")
