@@ -3,7 +3,13 @@ project(File_Sorter_Core C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(file-sorter main.c tools/logger.c tools/include/logger.h tools/config_parser.c tools/include/config_parser.h src/manager.c src/include/manager.h)
+add_executable(file-sorter main.c tools/logger.c tools/include/log/logger.h tools/config_parser.c tools/include/config/config_parser.h src/manager.c src/include/manager.h)
+
+include_directories(
+        src/include
+        tools/include
+)
+
 set(GCC_COVERAGE_COMPILE_FLAGS "-pthread")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )

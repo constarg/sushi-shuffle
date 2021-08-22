@@ -6,8 +6,8 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#include "include/config_parser.h"
-#include "include/logger.h"
+#include <config/config_parser.h>
+#include <log/logger.h>
 
 #define CONFIG_PATH "/.local/share/file_sorter/config/config.conf"
 
