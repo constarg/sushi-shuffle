@@ -7,9 +7,9 @@
 #include <errno.h>
 #include <alloca.h>
 
-#include "include/manager.h"
-#include "../tools/include/config_parser.h"
-#include "../tools/include/logger.h"
+#include <manager.h>
+#include <config/config_parser.h>
+#include <log/logger.h>
 
 #define TRUE 1
 
@@ -218,7 +218,3 @@ char *extract_path_from_target(char *target, char *filename) {
     free(tmp);
     return path;
 }
-
-
-
-

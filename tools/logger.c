@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "include/logger.h"
+#include <log/logger.h>
 
 #define DEBUG_PREFIX "[DEBUG]"
 #define NORMAL_PREFIX "[LOG]"
