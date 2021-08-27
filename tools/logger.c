@@ -2,12 +2,12 @@
 
 #include <log/logger.h>
 
-#define DEBUG_PREFIX "[DEBUG]"
-#define NORMAL_PREFIX "[LOG]"
+#define DEBUG_PREFIX    "[DEBUG]"
+#define NORMAL_PREFIX   "[LOG]"
 
-#define ERROR_PREFIX "[ERROR]"
-#define SUCCESS_PREFIX "[SUCCESS]"
-#define WARN_PREFIX "[WARN]"
+#define ERROR_PREFIX    "[ERROR]"
+#define SUCCESS_PREFIX  "[SUCCESS]"
+#define WARN_PREFIX     "[WARN]"
 
 void show_logs(const char *message, const char *log_type_prefix, const char *seriousness_type, const char *reason);
 

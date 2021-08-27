@@ -9,27 +9,27 @@
 #include <config/config_parser.h>
 #include <log/logger.h>
 
-#define CONFIG_PATH "/.local/share/file_sorter/config/config.conf"
+#define CONFIG_PATH             "/.local/share/file_sorter/config/config.conf"
 
-#define CHECK_INTERVAL "checkInterval"
-#define PARSE_INTERVAL "parseInterval"
-#define DEBUG "debugLog"
-#define DEFAULT_DIR_PATH "defaultDirPath"
-#define TARGETS "[targets]"
-#define CHECK "[check]"
+#define CHECK_INTERVAL          "checkInterval"
+#define PARSE_INTERVAL          "parseInterval"
+#define DEBUG                   "debugLog"
+#define DEFAULT_DIR_PATH        "defaultDirPath"
+#define TARGETS                 "[targets]"
+#define CHECK                   "[check]"
 
-#define SUCCESS_MESSAGE "Successfully parse "
-#define SUCCESS_LOAD "Successfully load config"
+#define SUCCESS_MESSAGE         "Successfully parse "
+#define SUCCESS_LOAD            "Successfully load config"
 
-#define ERROR_MESSAGE "Failed to parse "
-#define PARSE_FAILED_EMPTY "The value is empty"
-#define PARSE_FAILED_NOTHING "There is no value"
-#define PARSE_FAILED_NO_FIELD "There is no such field"
+#define ERROR_MESSAGE           "Failed to parse "
+#define PARSE_FAILED_EMPTY      "The value is empty"
+#define PARSE_FAILED_NOTHING    "There is no value"
+#define PARSE_FAILED_NO_FIELD   "There is no such field"
 
-#define FAILED_TO_OPEN "Failed to open config file"
-#define FAILED_TO_READ_SIZE "Failed to read config size"
-#define FAILED_TO_READ "Failed to read config file"
-#define FAILED_TO_CLOSE "Failed to close config file"
+#define FAILED_TO_OPEN          "Failed to open config file"
+#define FAILED_TO_READ_SIZE     "Failed to read config size"
+#define FAILED_TO_READ          "Failed to read config file"
+#define FAILED_TO_CLOSE         "Failed to close config file"
 
 
 void parse_data(struct config *conf, const char *buffer, size_t buffer_size);
@@ -140,7 +140,7 @@ char **get_dependencies(const char *buffer, char *dependency, int* number) {
     char *current_dependency = strtok(location_on_conf, splitter);
     char **dependencies = malloc(sizeof(char *) * (dep_counter + 1));
     int save_counter = 0;
-    size_t tmp_len = 0;
+    size_t tmp_len;
     // erase garbage.
     current_dependency = strtok(NULL, splitter);
     while (current_dependency != NULL && save_counter < dep_counter) {
