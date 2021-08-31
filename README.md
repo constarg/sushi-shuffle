@@ -38,11 +38,16 @@ defaultDirPath /home/username/default_sorter_path/
 [done_targets]
 ```
 The information is as follows.<br>
-`- checkInterval`:  The time between checks (for new files etc).<br>
-`- parseInterval`:  The time to read the config file again for any changes.<br>
-`- debugLog`:  For debugging. To enter debug mode, the value of the debugLog field must be changed to 1.<br>
-`- defaultDirPath`:  If a file is found outside of a folder and no specific location has been specified to which it should be moved, then it will go to defaultDirPath.<br>
-`- [check]`:   This field includes all locations where the program will look for files. Each location that enters this field must be entered before `[done_check]`. An example is the following.
+argument |  Description
+---------|--------------
+`checkInterval` |  The time between checks (for new files etc).<br>
+`parseInterval` |  The time to read the config file again for any changes.<br>
+`debugLog` |  For debugging. To enter debug mode, the value of the debugLog field must be changed to 1.<br>
+`defaultDirPath` |  If a file is found outside of a folder and no specific location has been specified to which it should be moved, then it will go to defaultDirPath.<br>
+`[check]` | This field includes all locations where the program will look for files. Each location that enters this field must be entered before `[done_check]`.
+`[targets]` | This field consists of two parts. The first part refers to the file extension and the second part refers to the location that each file should send with this extension.<br>
+
+An example of check:<br>
 ```
 [check]
 /home/username/
@@ -50,7 +55,7 @@ The information is as follows.<br>
 ...
 [done_check]
 ```
-`- [targets]`:   This field consists of two parts. The first part refers to the file extension and the second part refers to the location that each file should send with this extension. An example is the following.<br>
+An example of tatgets:<br>
 ```
 [targets]
 .py /home/username/Documents/py/
