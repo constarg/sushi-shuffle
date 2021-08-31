@@ -47,7 +47,7 @@ argument |  Description
 `[check]` | This field includes all locations where the program will look for files. Each location that enters this field must be entered before `[done_check]`.
 `[targets]` | This field contains all the file extensions and all the locations that these files should be sent to. Each line in this field consists of two elements that are separated by a space. The first element is the extension of the file and the second is the location where this file should be sent. Also each new line must be entered before `[done_targets]`.<br>
 
-An example of check:<br>
+An example of `[check]`:<br>
 ```
 [check]
 /home/username/
@@ -55,7 +55,7 @@ An example of check:<br>
 ...
 [done_check]
 ```
-An example of tatgets:<br>
+An example of `[targets]`:<br>
 ```
 [targets]
 .py /home/username/Documents/py/
