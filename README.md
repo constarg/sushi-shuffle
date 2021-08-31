@@ -45,7 +45,7 @@ argument |  Description
 `debugLog` |  For debugging. To enter debug mode, the value of the debugLog field must be changed to 1.<br>
 `defaultDirPath` |  If a file is found outside of a folder and no specific location has been specified to which it should be moved, then it will go to defaultDirPath.<br>
 `[check]` | This field includes all locations where the program will look for files. Each location that enters this field must be entered before `[done_check]`.
-`[targets]` | This field consists of two parts. The first part refers to the file extension and the second part refers to the location that each file should send with this extension.<br>
+`[targets]` | This field contains all the types of files and all the locations that these files should be sent to. Each line in this field consists of two elements that are separated by a space. The first element is the extension of the file and the second is the location where this file should be sent. Also each new line must be entered before `[done_targets]`.<br>
 
 An example of check:<br>
 ```
@@ -63,7 +63,7 @@ An example of tatgets:<br>
 ...
 [done_targets]
 ```
-In the example above the first part consists of the extensions `.py` and `.cpp` and the second part of the locations `/home/username/ Documents/py/` and `/home/username/Documents/cpp/`. Also all data must be entered before `[done_targets]`.
+In the example above the first part consists of the extensions `.py` and `.cpp` and the second part of the locations `/home/username/ Documents/py/` and `/home/username/Documents/cpp/`.
 
 # Service
 The program can be run using `systemd`. To start the program from `systemd` the following must be performed.<br>
