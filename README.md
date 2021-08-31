@@ -38,7 +38,7 @@ defaultDirPath /home/username/default_sorter_path/
 [done_targets]
 ```
 The information is as follows.<br>
-argument |  Description
+Field |  Description
 ---------|--------------
 `checkInterval` |  The time between checks (for new files etc).<br>
 `parseInterval` |  The time to read the config file again for any changes.<br>
