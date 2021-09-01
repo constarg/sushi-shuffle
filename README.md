@@ -38,14 +38,15 @@ defaultDirPath /home/username/default_sorter_path/
 [done_targets]
 ```
 The information is as follows.<br>
+
 Field |  Description
 ---------|--------------
-`checkInterval` |  The time between checks (for new files etc).<br>
-`parseInterval` |  The time to read the config file again for any changes.<br>
-`debugLog` |  For debugging. To enter debug mode, the value of the debugLog field must be changed to 1.<br>
-`defaultDirPath` |  If a file is found outside of a folder and no specific location has been specified to which it should be moved, then it will go to defaultDirPath.<br>
+`checkInterval` | The time between checks (for new files etc).
+`parseInterval` | The time to read the config file again for any changes.
+`debugLog` | For debugging. To enter debug mode, the value of the debugLog field must be changed to 1.
+`defaultDirPath` | If a file is found outside of a folder and no specific location has been specified to which it should be moved, then it will go to defaultDirPath.
 `[check]` | This field includes all locations where the program will look for files. Each location that enters this field must be entered before `[done_check]`.
-`[targets]` | This field contains all the file extensions and all the locations that these files should be sent to. Each line in this field consists of two elements that are separated by a space. The first element is the extension of the file and the second is the location where this file should be sent. Also each new line must be entered before `[done_targets]`.<br>
+`[targets]` | This field contains all the file extensions and all the locations that these files should be sent to. Each line in this field consists of two elements that are separated by a space. The first element is the extension of the file and the second is the location where this file should be sent. Also each new line must be entered before `[done_targets]`.
 
 An example of `[check]`:<br>
 ```
