@@ -53,7 +53,6 @@ static inline char *get_config_path() {
 
 static inline char *form_parse_msg(const char *option, const char *type) {
     size_t parse_msg_s = strlen(type) + strlen(option);
-    // TODO change the allocation.
     char *parse_msg = NULL;
     // Allocate memory.
     ALLOCATE_MEM(parse_msg, parse_msg_s + 2, sizeof(char));
@@ -78,6 +77,8 @@ static void *get_value_of(const char *option, const char *buffer) {
     // Check if the option exist.
     if (option_location == NULL) {
         make_log(error_msg, PARSE_FAILED_NO_FIELD, NORMAL_LOG, ERROR);
+        free(error_msg);
+        free(success_msg);
         return NULL;
     }
 
@@ -148,7 +149,12 @@ static char **get_values_of(const char *list, const char *list_end, size_t *size
         current_line = strtok(NULL, "\n");
     }
     --lines_s;
-    if (lines_s == 0) return NULL;
+    if (lines_s == 0) {
+        free(error_msg);
+        free(success_msg);
+        free(lines);
+        return NULL;
+    }
 
     *size = lines_s;
 
@@ -159,15 +165,15 @@ static char **get_values_of(const char *list, const char *list_end, size_t *size
 }
 
 static void parse_data(struct config *conf, const char *buffer) {
-    ALLOCATE_MEM(conf->c_checks_s, 1, sizeof(size_t));
-    ALLOCATE_MEM(conf->c_targets, 1, sizeof(size_t));
+    conf->c_checks_s = 0;
+    conf->c_targets_s = 0;
     conf->c_check_interval = (int *) get_value_of(CHECK_INTERVAL, buffer);
     conf->c_parse_interval = (int *) get_value_of(PARSE_INTERVAL, buffer);
     conf->c_debug_log = (int *) get_value_of(DEBUG, buffer);
     conf->c_default_dir_path = (char *) get_value_of(DEFAULT_DIR_PATH, buffer);
     conf->c_enable_default_path = (int *) get_value_of(ENABLE_DEFAULT_PATH, buffer);
-    conf->c_targets = get_values_of(TARGETS, DONE_TARGETS, conf->c_targets_s, buffer);
-    conf->c_checks = get_values_of(CHECK, DONE_CHECK, conf->c_checks_s, buffer);
+    conf->c_targets = get_values_of(TARGETS, DONE_TARGETS, &conf->c_targets_s, buffer);
+    conf->c_checks = get_values_of(CHECK, DONE_CHECK, &conf->c_checks_s, buffer);
 }
 
 static inline void free_list(char **list, size_t size) {
@@ -180,8 +186,9 @@ struct config *clear_config(struct config *conf) {
     if (conf->c_parse_interval != NULL) free(conf->c_parse_interval);
     if (conf->c_debug_log != NULL) free(conf->c_debug_log);
     if (conf->c_default_dir_path != NULL) free(conf->c_default_dir_path);
-    if (conf->c_targets != NULL) free_list(conf->c_targets, *conf->c_targets_s);
-    if (conf->c_checks != NULL) free_list(conf->c_checks, *conf->c_checks_s);
+    if (conf->c_enable_default_path != NULL) free(conf->c_enable_default_path);
+    if (conf->c_targets != NULL) free_list(conf->c_targets, conf->c_targets_s);
+    if (conf->c_checks != NULL) free_list(conf->c_checks, conf->c_checks_s);
 
     free(conf);
     struct config *tmp = NULL;
