@@ -30,10 +30,10 @@ The program gets the information it needs from a config file, which is like the 
 
 ```
 [basic_config]
-checkInterval 3000
-parseInterval 5000
-debugLog 0
-defaultDirPath /home/username/default_sorter_path/
+check_interval 3000
+parse_interval 5000
+debug_log 0
+default_dir_path /home/username/default_sorter_path/
 
 [check]
 
@@ -48,10 +48,10 @@ The information is as follows.<br>
 
 Field |  Description
 ---------|--------------
-`checkInterval` | The time between checks (for new files etc).
-`parseInterval` | The time to read the config file again for any changes.
-`debugLog` | For debugging. To enter debug mode, the value of the debugLog field must be changed to 1.
-`defaultDirPath` | If a file is found outside of a folder and no specific location has been specified to which it should be moved, then it will go to defaultDirPath.
+`check_interval` | The time between checks (for new files etc).
+`parse_interval` | The time to read the config file again for any changes.
+`debug_log` | For debugging. To enter debug mode, the value of the debugLog field must be changed to 1.
+`default_dir_path` | If a file is found outside of a folder and no specific location has been specified to which it should be moved, then it will go to default_dir_path.
 `[check]` | This field includes all locations where the program will look for files. Each location that enters this field must be entered before `[done_check]`.
 `[targets]` | This field contains all the file extensions and all the locations that these files should be sent to. Each line in this field consists of two elements that are separated by a space. The first element is the extension of the file and the second is the location where this file should be sent. Also each new line must be entered before `[done_targets]`.
 
