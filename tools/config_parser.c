@@ -25,7 +25,6 @@
 #define SUCCESS_PARSE               "Successfully parse"
 #define SUCCESS_LOAD                "Successfully load config"
 
-
 #define PARSE_FAILED_EMPTY          "The value is empty"
 #define PARSE_FAILED_NO_FIELD       "There is no such field"
 
@@ -147,13 +146,20 @@ static char **get_values_of(const char *list, const char *list_end, size_t *size
         REALLOCATE_MEM(lines, sizeof(char *) * (++lines_s));
         current_line = strtok(NULL, "\n");
     }
-    ALLOCATE_MEM(size, 1, sizeof(size_t));
-    *size = lines_s - 2;
+    --lines_s;
+    if (lines_s == 0) return NULL;
 
+    *size = lines_s;
+
+    make_log(success_msg, NULL, NORMAL_LOG, SUCCESS);
+    free(error_msg);
+    free(success_msg);
     return lines;
 }
 
 static void parse_data(struct config *conf, const char *buffer) {
+    ALLOCATE_MEM(conf->c_checks_s, 1, sizeof(size_t));
+    ALLOCATE_MEM(conf->c_targets, 1, sizeof(size_t));
     conf->c_check_interval = (int *) get_value_of(CHECK_INTERVAL, buffer);
     conf->c_parse_interval = (int *) get_value_of(PARSE_INTERVAL, buffer);
     conf->c_debug_log = (int *) get_value_of(DEBUG, buffer);
