@@ -16,35 +16,25 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
 
 file(MAKE_DIRECTORY /home/$ENV{USER}/.local/share/file_sorter/)
 
-message("/home/$ENV{USER}/.local/share/file_sorter/ OK")
+
 file(MAKE_DIRECTORY /home/$ENV{USER}/.local/share/file_sorter/config/)
 
-message("/home/$ENV{USER}/.local/share/file_sorter/config/ OK")
 file(MAKE_DIRECTORY /home/$ENV{USER}/default_sorter_path/)
 
-message("/home/$ENV{USER}/default_sorter_path/ OK")
 file(MAKE_DIRECTORY config/)
 
-message("config/ OK")
 file(MAKE_DIRECTORY service/)
 
-message("service/ OK")
 file(MAKE_DIRECTORY autostart/)
-message("autostart/ OK")
 
 if (EXISTS /home/$ENV{USER}/.config/systemd/)
-    message("/home/$ENV{USER}/.config/systemd/ OK")
     if (EXISTS /home/$ENV{USER}/.config/systemd/user/)
-        message("/home/$ENV{USER}/.config/systemd/user/ OK")
     else ()
         file(MAKE_DIRECTORY /home/$ENV{USER}/.config/systemd/user/)
-        message("/home/$ENV{USER}/.config/systemd/user/ OK")
     endif ()
 else ()
     file(MAKE_DIRECTORY /home/$ENV{USER}/.config/systemd/)
-    message("/home/$ENV{USER}/.config/systemd/ OK")
     file(MAKE_DIRECTORY /home/$ENV{USER}/.config/systemd/user/)
-    message("/home/$ENV{USER}/.config/systemd/user/ OK")
 endif ()
 
 file(WRITE config/config.conf
@@ -53,7 +43,7 @@ file(WRITE config/config.conf
         parse_interval\ 5000\n
         debug_log\ 0\n
         default_dir_path\ /home/$ENV{USER}/default_sorter_path/\n
-        enable_default_path 1\n
+        enable_default_path\ 1\n
         \n
         [check]\n
         \n
