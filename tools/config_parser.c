@@ -168,6 +168,24 @@ static void parse_data(struct config *conf, const char *buffer) {
     conf->c_checks = get_values_of(CHECK, DONE_CHECK, conf->c_checks_s, buffer);
 }
 
+static inline void free_list(char **list, size_t size) {
+    for (int line = 0; line < size; line++) free(list[line]);
+    free(list);
+}
+
+struct config *clear_config(struct config *conf) {
+    if (conf->c_check_interval != NULL) free(conf->c_check_interval);
+    if (conf->c_parse_interval != NULL) free(conf->c_parse_interval);
+    if (conf->c_debug_log != NULL) free(conf->c_debug_log);
+    if (conf->c_default_dir_path != NULL) free(conf->c_default_dir_path);
+    if (conf->c_targets != NULL) free_list(conf->c_targets, *conf->c_targets_s);
+    if (conf->c_checks != NULL) free_list(conf->c_checks, *conf->c_checks_s);
+
+    free(conf);
+    struct config *tmp = NULL;
+    ALLOCATE_MEM(tmp, 1, sizeof(struct config));
+    return tmp;
+}
 
 int get_config(struct config *conf) {
     // Get the config path.
