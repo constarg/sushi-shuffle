@@ -18,6 +18,7 @@
 #define DEFAULT_DIR_PATH            "default_dir_path"
 #define TARGETS                     "[targets]"
 #define CHECK                       "[check]"
+#define ENABLE_DEFAULT_PATH         "enable_default_path"
 
 #define DONE_TARGETS                "[done_targets]"
 #define DONE_CHECK                  "[done_check]"
@@ -164,6 +165,7 @@ static void parse_data(struct config *conf, const char *buffer) {
     conf->c_parse_interval = (int *) get_value_of(PARSE_INTERVAL, buffer);
     conf->c_debug_log = (int *) get_value_of(DEBUG, buffer);
     conf->c_default_dir_path = (char *) get_value_of(DEFAULT_DIR_PATH, buffer);
+    conf->c_enable_default_path = (int *) get_value_of(ENABLE_DEFAULT_PATH, buffer);
     conf->c_targets = get_values_of(TARGETS, DONE_TARGETS, conf->c_targets_s, buffer);
     conf->c_checks = get_values_of(CHECK, DONE_CHECK, conf->c_checks_s, buffer);
 }

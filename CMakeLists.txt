@@ -53,6 +53,7 @@ file(WRITE config/config.conf
         parse_interval\ 5000\n
         debug_log\ 0\n
         default_dir_path\ /home/$ENV{USER}/default_sorter_path/\n
+        enable_default_path 1\n
         \n
         [check]\n
         \n
