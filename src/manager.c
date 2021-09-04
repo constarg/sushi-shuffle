@@ -53,7 +53,7 @@ _Noreturn void *parse(void *arg) {
         interval = *(conf->c_parse_interval);
         pthread_mutex_unlock(&lock);
         // sleep.
-        //sleep(interval);
+        sleep(interval);
     }
 }
 
@@ -187,8 +187,7 @@ _Noreturn void *move_to_dir(void *arg) {
 
         interval = *(conf->c_check_interval);
         pthread_mutex_unlock(&lock);
-
-        //sleep(interval);
+        sleep(interval);
     }
 }
 
