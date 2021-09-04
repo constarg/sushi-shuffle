@@ -24,7 +24,6 @@
 #define SUCCESS_MOVE                "File moved successfully to target directory."
 
 #define DEFAULT_PARSE_INTERVAL      5000
-#define DEFAULT_ENABLE_PATH         1
 #define INITIAL_CHECK_WAIT          5
 
 
@@ -109,6 +108,11 @@ static void move_file(const char *file_path, const char *file_name) {
     size_t move_file_to_s;
     size_t curr_ext_s;
 
+    if (conf->c_enable_default_path == NULL) {
+        move_to_default_path(file_path, file_name);
+        return;
+    }
+
     if (!conf->c_targets_s && conf->c_enable_default_path) {
         move_to_default_path(file_path, file_name);
         return;
@@ -133,6 +137,7 @@ static void move_file(const char *file_path, const char *file_name) {
         move_file_to_s = strlen(curr_path) + strlen(file_name);
         ALLOCATE_MEM(move_file_to, move_file_to_s + 1, sizeof(char));
         strcpy(move_file_to, curr_path);
+        strcat(move_file_to, file_name);
 
         if (rename(file_path, move_file_to) != 0) {
             if (*(conf->c_debug_log) == 1) make_log(FAILED_TO_MOVE_FILE, strerror(errno), DEBUG_LOG, ERROR);
@@ -145,10 +150,9 @@ static void move_file(const char *file_path, const char *file_name) {
         free(curr_ext);
         free(move_file_to);
         free(curr_path);
+        make_log(SUCCESS_MOVE, NULL, NORMAL_LOG, SUCCESS);
         return;
     }
-
-
 }
 
 _Noreturn void *move_to_dir(void *arg) {
