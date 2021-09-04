@@ -10,8 +10,8 @@ struct config {
     char   *c_default_dir_path;
     char   **c_targets;
     char   **c_checks;
-    size_t *c_checks_s;
-    size_t *c_targets_s;
+    size_t  *c_checks_s;
+    size_t  *c_targets_s;
 };
 
 extern int get_config(struct config *conf);
