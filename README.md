@@ -52,6 +52,7 @@ Field |  Description
 `parse_interval` | The time to read the config file again for any changes.
 `debug_log` | For debugging. To enter debug mode, the value of the debugLog field must be changed to 1.
 `default_dir_path` | If a file is found outside of a folder and no specific location has been specified to which it should be moved, then it will go to default_dir_path.
+`enable_default_path` | If this option is enabled, no files are transferred to the default folder. 
 `[check]` | This field includes all locations where the program will look for files. Each location that enters this field must be entered before `[done_check]`.
 `[targets]` | This field contains all the file extensions and all the locations that these files should be sent to. Each line in this field consists of two elements that are separated by a space. The first element is the extension of the file and the second is the location where this file should be sent. Also each new line must be entered before `[done_targets]`.
 
