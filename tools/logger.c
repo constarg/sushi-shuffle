@@ -9,7 +9,17 @@
 #define SUCCESS_PREFIX  "[SUCCESS]"
 #define WARN_PREFIX     "[WARN]"
 
-void show_logs(const char *message, const char *log_type_prefix, const char *seriousness_type, const char *reason);
+static inline void show_logs(const char *message,
+               const char *log_type_prefix,
+               const char *seriousness_type,
+               const char *reason) {
+    if (reason) {
+        printf("%s %s %s [reason] %s\n", log_type_prefix, seriousness_type, message, reason);
+        return;
+    }
+    printf("%s %s %s\n", log_type_prefix, seriousness_type, message);
+
+}
 
 int make_log(const char *message, const char *reason, int log_type, int seriousness) {
     char *prefix;
@@ -28,14 +38,4 @@ int make_log(const char *message, const char *reason, int log_type, int seriousn
     return 0;
 }
 
-void show_logs(const char *message,
-               const char *log_type_prefix,
-               const char *seriousness_type,
-               const char *reason) {
-    if (reason) {
-        printf("%s %s %s [reason] %s\n", log_type_prefix, seriousness_type, message, reason);
-        return;
-    }
-    printf("%s %s %s\n", log_type_prefix, seriousness_type, message);
 
-}
