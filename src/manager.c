@@ -24,3 +24,11 @@
 
 #define DEFAULT_PARSE_INTERVAL      5000
 #define INITIAL_CHECK_WAIT          5
+
+
+static struct config *conf;
+
+
+void run() {
+
+}
