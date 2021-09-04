@@ -6,8 +6,8 @@ struct config {
     int *c_parse_interval;
     int *c_debug_log;
     char *c_default_dir_path;
-    char **c_targets_path;
-    char **c_check;
+    char **c_targets;
+    char **c_checks;
     int c_check_number;
     int c_target_number;
 };

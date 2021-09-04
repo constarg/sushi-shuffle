@@ -1,15 +1,19 @@
 # Introduction
-This program transfers all files outside of folders 
-to the specific folders to which they belong. 
 
+This program transfers all files outside of folders to the specific folders to which they belong.
 
 # Download & Build
-First download the program from github and go to the File-Sorter-Core folder.
+
+First download the program from GitHub and go to the File-Sorter-Core folder.
+
 ```
 % git clone https://github.com/rounnus/File-Sorter-Core.git
 % cd File-Sorter-Core/
 ```
-After installation the program must be built. In order to build the program, the following instructions must be followed.<br>
+
+After installation the program must be built. In order to build the program, the following instructions must be
+followed.<br>
+
 ```
 % mkdir build
 % cd build/
@@ -17,10 +21,12 @@ After installation the program must be built. In order to build the program, the
 % make
 % sudo make install
 ```
+
 After this the program will be installed and ready to run.
 
 # Config
-The program gets the information it needs from a config file, which is like the following 
+
+The program gets the information it needs from a config file, which is like the following
 
 ```
 [basic_config]
@@ -37,6 +43,7 @@ defaultDirPath /home/username/default_sorter_path/
 
 [done_targets]
 ```
+
 The information is as follows.<br>
 
 Field |  Description
@@ -49,6 +56,7 @@ Field |  Description
 `[targets]` | This field contains all the file extensions and all the locations that these files should be sent to. Each line in this field consists of two elements that are separated by a space. The first element is the extension of the file and the second is the location where this file should be sent. Also each new line must be entered before `[done_targets]`.
 
 An example of `[check]`:<br>
+
 ```
 [check]
 /home/username/
@@ -56,7 +64,9 @@ An example of `[check]`:<br>
 ...
 [done_check]
 ```
+
 An example of `[targets]`:<br>
+
 ```
 [targets]
 .py /home/username/Documents/py/
@@ -64,8 +74,11 @@ An example of `[targets]`:<br>
 ...
 [done_targets]
 ```
-In the example above the first part consists of the extensions `.py` and `.cpp` and the second part of the locations `/home/username/ Documents/py/` and `/home/username/Documents/cpp/`.
+
+In the example above the first part consists of the extensions `.py` and `.cpp` and the second part of the
+locations `/home/username/ Documents/py/` and `/home/username/Documents/cpp/`.
 
 # Service
+
 The program can be run using `systemd`. To start the program from `systemd` the following must be performed.<br>
 ``` systemctl --user start file-sorter```
