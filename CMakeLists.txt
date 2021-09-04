@@ -3,7 +3,7 @@ project(File_Sorter_Core C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(file-sorter main.c tools/logger.c tools/include/log/logger.h tools/config_parser.c tools/include/config/config_parser.h src/manager.c src/include/manager.h)
+add_executable(file-sorter main.c tools/logger.c tools/include/log/logger.h tools/config_parser.c tools/include/config/config_parser.h src/manager.c src/include/manager.h tools/include/mem.h)
 
 include_directories(
         src/include
@@ -12,7 +12,7 @@ include_directories(
 
 set(GCC_COVERAGE_COMPILE_FLAGS "-pthread")
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
 
 file(MAKE_DIRECTORY /home/$ENV{USER}/.local/share/file_sorter/)
 
@@ -36,23 +36,23 @@ if (EXISTS /home/$ENV{USER}/.config/systemd/)
     message("/home/$ENV{USER}/.config/systemd/ OK")
     if (EXISTS /home/$ENV{USER}/.config/systemd/user/)
         message("/home/$ENV{USER}/.config/systemd/user/ OK")
-    else()
+    else ()
         file(MAKE_DIRECTORY /home/$ENV{USER}/.config/systemd/user/)
         message("/home/$ENV{USER}/.config/systemd/user/ OK")
-    endif()
-else()
+    endif ()
+else ()
     file(MAKE_DIRECTORY /home/$ENV{USER}/.config/systemd/)
     message("/home/$ENV{USER}/.config/systemd/ OK")
     file(MAKE_DIRECTORY /home/$ENV{USER}/.config/systemd/user/)
     message("/home/$ENV{USER}/.config/systemd/user/ OK")
-endif()
+endif ()
 
 file(WRITE config/config.conf
         [basic_config]\n
-        checkInterval\ 3000\n
-        parseInterval\ 5000\n
-        debugLog\ 0\n
-        defaultDirPath\ /home/$ENV{USER}/default_sorter_path/\n
+        check_interval\ 3000\n
+        parse_interval\ 5000\n
+        debug_log\ 0\n
+        default_dir_path\ /home/$ENV{USER}/default_sorter_path/\n
         \n
         [check]\n
         \n
