@@ -34,6 +34,7 @@ check_interval 3000
 parse_interval 5000
 debug_log 0
 default_dir_path /home/username/default_sorter_path/
+enable_default_path 1
 
 [check]
 
