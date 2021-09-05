@@ -22,6 +22,11 @@ followed.<br>
 % sudo make install
 ```
 
+`
+The cmake should be from version 3.19 and above, if you do not have this version please go to the following site and download the latest version:
+https://cmake.org/download/
+`
+
 After this the program will be installed and ready to run.
 
 # Config
