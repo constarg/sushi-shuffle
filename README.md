@@ -90,7 +90,7 @@ Due to the nature of this program and this config i made a tool that helps the u
    - Add locations to the config check field.<br>
    - Be able to add targets.<br>
    - To be able to delete check and targets.<br>
-   - To be able to see the check and tatgets.<br>
+   - To be able to see the check and targets.<br>
    - To be able to change the program settings.<br><br>
 
 The tool described above can be found here:<br>
