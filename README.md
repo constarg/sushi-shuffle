@@ -85,6 +85,17 @@ An example of `[targets]`:<br>
 In the example above the first part consists of the extensions `.py` and `.cpp` and the second part of the
 locations `/home/username/ Documents/py/` and `/home/username/Documents/cpp/`.
 
+# Tool
+Due to the nature of this program and this config i made a tool that helps the user to do the following:<br>
+   - Add locations to the config check field.<br>
+   - Be able to add targets.<br>
+   - To be able to delete check and targets.<br>
+   - To be able to see the check and tatgets.<br>
+   - To be able to change the program settings.<br><br>
+
+The tool described above can be found here:<br>
+`https://github.com/rounnus/File-Sorter-Terminal-Tool`
+
 # Service
 
 The program can be run using `systemd`. To start the program from `systemd` the following must be performed.<br>
