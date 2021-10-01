@@ -31,7 +31,7 @@ After this the program will be installed and ready to run.
 
 # Config
 
-The program gets the information it needs from a config file, which is like the following
+The program gets the information it needs from a config file, which is like the following.
 
 ```
 [basic_config]
@@ -49,6 +49,8 @@ enable_default_path 1
 
 [done_targets]
 ```
+The config is stored in the following location:<br>
+`~/.local/share/file_sorter/config/config.conf`
 
 The information is as follows.<br>
 
