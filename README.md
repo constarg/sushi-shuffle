@@ -1,7 +1,7 @@
 [![CMake](https://github.com/rounnus/File-Sorter-Core/actions/workflows/File-Sorter-Core%20Build.yml/badge.svg?branch=main)](https://github.com/rounnus/File-Sorter-Core/actions/workflows/File-Sorter-Core%20Build.yml)
 # Introduction
 
-Automatically transfer files, which are scattered outside of their folders, to the folders to which they belong using a simple file config and a tool.
+Automatically transfer files, which are scattered outside of their folders, to the folders to which they belong using a simple config file and a tool.
 
 # Download & Build
 
