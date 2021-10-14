@@ -57,8 +57,8 @@ The information is as follows.<br>
 
 Field |  Description
 ---------|--------------
-`check_interval` | The time between checks (for new files etc).
-`parse_interval` | The time to read the config file again for any changes.
+`check_interval` | The time ( seconds ) between checks (for new files etc).
+`parse_interval` | The time ( seconds ) to read the config file again for any changes.
 `debug_log` | For debugging. To enter debug mode, the value of the debugLog field must be changed to 1.
 `default_dir_path` | If a file is found outside of a folder and no specific location has been specified to which it should be moved, then it will go to default_dir_path.
 `enable_default_path` | If this option is enabled, then any file that do not have a specific location to which they should be sent will be sent to the default.
