@@ -1,7 +1,7 @@
 [![CMake](https://github.com/rounnus/File-Sorter-Core/actions/workflows/File-Sorter-Core%20Build.yml/badge.svg?branch=main)](https://github.com/rounnus/File-Sorter-Core/actions/workflows/File-Sorter-Core%20Build.yml)
 # Introduction
 
-This program transfers all files outside of folders to the specific folders to which they belong.
+Automatically transfer files, which are scattered outside of their folders, to the folders to which they belong using a simple file config and a tool.
 
 # Download & Build
 
