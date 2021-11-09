@@ -1,4 +1,5 @@
 [![CMake](https://github.com/rounnus/File-Sorter-Core/actions/workflows/File-Sorter-Core%20Build.yml/badge.svg?branch=main)](https://github.com/rounnus/File-Sorter-Core/actions/workflows/File-Sorter-Core%20Build.yml)
+
 # Introduction
 
 Automatically transfer files, which are scattered outside of their folders, to the folders to which they belong using a simple config file and a tool.
@@ -103,3 +104,8 @@ https://github.com/rounnus/File-Sorter-Terminal-Tool
 
 The program can be run using `systemd`. To start the program from `systemd` the following must be performed.<br>
 ``` systemctl --user start file-sorter```
+
+# Compatible operating systems
+- [X] Linux
+- [ ] Windows
+- [ ] Mac
