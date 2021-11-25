@@ -98,7 +98,7 @@ Due to the nature of this program and this config i made a tool that helps the u
    - To be able to change the program settings.<br><br>
 
 The tool described above can be found here:<br>
-https://github.com/rounnus/File-Sorter-Terminal-Tool
+https://github.com/rounnus/file-sorter-terminal-tool
 
 # Service
 
