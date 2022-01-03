@@ -4,6 +4,12 @@
 
 Automatically transfer files, which are scattered outside of their folders, to the folders to which they belong using a simple config file and a tool.
 
+# Installation requirements
+The following packages must be installed.<br>
+```
+sudo apt-get install build-essential cmake git gcc
+```
+
 # Download & Build
 
 First download the program from GitHub and go to the File-Sorter-Core folder.
