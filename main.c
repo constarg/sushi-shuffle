@@ -1,7 +1,10 @@
-#include <manager.h>
 
 
-int main() {
-    run();
-    return 0;
+
+
+
+
+int main()
+{
+
 }
