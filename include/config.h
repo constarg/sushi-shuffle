@@ -12,7 +12,7 @@ struct options
 {
 	unsigned int o_check_interval;		// check interval option.
 	unsigned int o_parse_interval;		// parse interval option.
-	unsigned int o_debug_log;		// debug log option.
+	unsigned int o_debug_log:1;		// debug log option.
 	char *o_default_path;			// default path option.
 	unsigned int o_enable_default:1;	// enable default path option.
 };
@@ -50,8 +50,8 @@ static void inline init_config(struct config *config)
 	@param path The path to the config file.
 	@return The coresponded error that was occured.
 */
-extern int parse_config(struct config *src, const char *path);
+extern int parse_config(struct config *dst, const char *conf_buff);
 
-
+extern int reparse_config(struct config *dst, const char *conf_buff);
 
 #endif
