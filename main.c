@@ -33,10 +33,17 @@ int main(int argc, char *argv[])
 
 	if (read(conf_fd, conf_buff, conf_stat.st_size) == -1) return -1; // TODO: Call the logger here.
 	close(conf_fd);
+	conf_buff[conf_stat.st_size] = '\0';
 
 	// parse config.
 	parse_config(&config_p, conf_buff);
 
+	for (int i = 0; config_p.c_lists.l_check_list[i]; i++)
+	{
+		printf("%s\n", config_p.c_lists.l_check_list[i]);
+	}
+
+	
 	free(absolute);
 	free(conf_buff);	
 }
