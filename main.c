@@ -38,12 +38,6 @@ int main(int argc, char *argv[])
 	// parse config.
 	parse_config(&config_p, conf_buff);
 
-	for (int i = 0; config_p.c_lists.l_check_list[i]; i++)
-	{
-		printf("%s\n", config_p.c_lists.l_check_list[i]);
-	}
-
-	
 	free(absolute);
 	free(conf_buff);	
 }

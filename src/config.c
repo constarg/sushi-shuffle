@@ -19,9 +19,11 @@ static char *isolate_opt(const char *conf_buff, const char *opt)
 
 static inline unsigned int parse_int_opt(const char *conf_buff, const char *opt)
 {
-	char *opt_r = isolate_opt(conf_buff, opt);
-	// TODO: Add warning in logger if the value is zero.	
-	return (opt_r == NULL)? 0:atoi(opt_r); // get the int value.
+	char *opt_a = isolate_opt(conf_buff, opt);
+	int opt_r = (opt_a == NULL)? 0:atoi(opt_a);
+	// TODO: Add warning in logger if the value is zero.
+	free(opt_a); 	
+	return opt_r; // get the int value.
 }
 
 static inline char *parse_str_opt(const char *conf_buff, const char *opt)
@@ -49,9 +51,9 @@ static char **parse_list(const char *conf_buff, const char *list)
 		curr_el = strtok(NULL, "\n");
 		if (curr_el == NULL) break;
 		if (!strcmp(curr_el, "[done]")) break;
-		real_l = c;
+		real_l = c + 1;
 
-		if (c == list_l)
+		if (real_l == list_l)
 		{	
 			list += 10;
 			list_r = (char **) realloc(list_r,  list_l * sizeof(char *));
@@ -63,7 +65,7 @@ static char **parse_list(const char *conf_buff, const char *list)
 	// null terminate the array.
 	list_r[real_l] = NULL;
 	free(tmp);
-	return (char **) realloc(list_r, real_l * sizeof(char *)); // adjust the size of the list.
+	return (char **) realloc(list_r, (real_l + 1) * sizeof(char *)); // adjust the size of the list.
 }
 
 static inline void free_list(char *(**list))
