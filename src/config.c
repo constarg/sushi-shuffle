@@ -55,7 +55,7 @@ static char **parse_list(const char *conf_buff, const char *list)
 
 		if (real_l == list_l)
 		{	
-			list += 10;
+			list_l += 10;
 			list_r = (char **) realloc(list_r,  list_l * sizeof(char *));
 			if (list_r == NULL) return NULL; // TODO: print warning using logger. 	
 		}
