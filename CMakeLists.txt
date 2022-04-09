@@ -3,11 +3,13 @@ project(File_Sorter_Core C)
 
 set(CMAKE_C_STANDARD 17)
 
-add_executable(file-sorter main.c src/config.c include/config.h)
+set(SOURCE_FILES main.c ./src/config.c ./src/sorter.c)
+set(HEADER_FILES ./include/config.h ./include/sorter.h)
+set(TO_INCLUDE ./include/)
 
-include_directories(
-       include/ 
-)
+add_executable(file-sorter ${SOURCE_FILES} ${HEADER_FILES})
+
+include_directories(${TO_INCLUDE})
 
 set(GCC_COVERAGE_COMPILE_FLAGS "-pthread")
 

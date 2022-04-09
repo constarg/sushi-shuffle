@@ -4,7 +4,7 @@
 #include <fcntl.h>
 #include <malloc.h>
 
-#include <config.h>
+#include "config.h"
 
 #define CONF_PATH "/.local/share/file_sorter/config/config.conf"
 
@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
 	// parse config.
 	parse_config(&config_p, conf_buff);
 
+	destroy_config(&config_p); // TODO - is for test, remove it when you are done.
 	free(absolute);
 	free(conf_buff);	
 }

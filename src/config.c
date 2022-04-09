@@ -76,7 +76,7 @@ static inline void free_list(char *(**list))
 	*list = NULL;
 }
 
-int parse_config(struct config *dst, const char *conf_buff)
+void parse_config(struct config *dst, const char *conf_buff)
 {
 	dst->c_options.o_check_interval = parse_int_opt(conf_buff, "check_interval");
 	dst->c_options.o_parse_interval = parse_int_opt(conf_buff, "parse_interval");
@@ -88,15 +88,20 @@ int parse_config(struct config *dst, const char *conf_buff)
 	dst->c_lists.l_exclude_list 	= parse_list(conf_buff, "[exclude]");
 }
 
-
-int reparse_config(struct config *dst, const char *conf_buff)
+void destroy_config(struct config *src)
 {
 	// free the allocated space where it should.
-	free(dst->c_options.o_default_path);
-	dst->c_options.o_default_path = NULL;
-	free_list(&dst->c_lists.l_check_list);
-	free_list(&dst->c_lists.l_target_list);
-	free_list(&dst->c_lists.l_exclude_list);
+	free(src->c_options.o_default_path);
+	src->c_options.o_default_path = NULL;
+	free_list(&src->c_lists.l_check_list);
+	free_list(&src->c_lists.l_target_list);
+	free_list(&src->c_lists.l_exclude_list);
+
+}
+
+void reparse_config(struct config *dst, const char *conf_buff)
+{
+	destroy_config(dst);
 	// reparse.
 	parse_config(dst, conf_buff);
 }
