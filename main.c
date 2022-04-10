@@ -1,3 +1,4 @@
+#ifdef __unix__
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -7,11 +8,16 @@
 #include <config.h>
 #include <sorter.h>
 
+#else
+// TODO - include logger.
+#endif
+
 #define CONF_PATH "/.local/share/file_sorter/config/config.conf"
 
 
 int main(int argc, char *argv[])
 {
+#ifdef __unix__
 	struct config config_p;
 	// initialzize the config.
 	init_config(&config_p);
@@ -45,4 +51,7 @@ int main(int argc, char *argv[])
 	start_sorter(&config_p);
 
 	destroy_config(&config_p);
+#else
+	// TODO - call logger and write that the oparating system is not compatiple.
+#endif
 }
