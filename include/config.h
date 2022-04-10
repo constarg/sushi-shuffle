@@ -47,12 +47,10 @@ static void inline init_config(struct config *config)
 	Parse the config file and save the informations	
 	inside the dst variable.
 	@param dst The destination of where we put the config.
-	@param path The path to the config file.
-	@return The coresponded error that was occured.
 */
-extern void parse_config(struct config *dst, const char *conf_buff);
+extern void parse_config(struct config *dst);
 
-extern void reparse_config(struct config *dst, const char *conf_buff);
+extern void reparse_config(struct config *dst);
 
 extern void destroy_config(struct config *src);
 
