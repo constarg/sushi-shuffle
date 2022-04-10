@@ -1,5 +1,8 @@
 #include <pthread.h>
-#include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+#include <malloc.h>
+#include <unistd.h>
 
 #include <sorter.h>
 
@@ -11,13 +14,20 @@ static pthread_mutex_t config_lock;
 // the thread that will reparse the config file.
 static void *refresh_config(void *arg)
 {
-	
+	while (1)
+	{
+		sleep(config_file->c_options.o_parse_interval);
+		pthread_mutex_lock(&config_lock);
+		// reparse the config. Thread safe.
+		reparse_config(config_file);
+		pthread_mutex_unlock(&config_lock);
+	}	
 }
 
 // the thread that will organize the files.
 static void *organize_files(void *arg)
 {
-	
+		
 }
 
 
