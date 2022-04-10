@@ -61,7 +61,12 @@ static char **parse_list(const char *conf_buff, const char *list)
 		}
 		list_r[c] = strdup(curr_el);
 	}
-
+	if (real_l == 0) 
+	{
+		free(list_r);
+		free(tmp);
+		return NULL;
+	}
 	// null terminate the array.
 	list_r[real_l] = NULL;
 	free(tmp);
@@ -70,6 +75,7 @@ static char **parse_list(const char *conf_buff, const char *list)
 
 static inline void free_list(char *(**list))
 {
+	if ((*list) == NULL) return;
 	for (int i = 0; (*list)[i]; i++)
 		free((*list)[i]);
 	free(*list); 
