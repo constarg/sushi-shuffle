@@ -1,14 +1,15 @@
 cmake_minimum_required(VERSION 3.19)
 project(File_Sorter_Core C)
 
-set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD 17)
 
-add_executable(file-sorter main.c tools/logger.c tools/include/log/logger.h tools/config_parser.c tools/include/config/config_parser.h src/manager.c src/include/manager.h tools/include/mem.h)
+set(SOURCE_FILES main.c ./src/config.c ./src/sorter.c ./src/logger.c)
+set(HEADER_FILES ./include/config.h ./include/sorter.h ./include/logger.h)
+set(TO_INCLUDE ./include/)
 
-include_directories(
-        src/include
-        tools/include
-)
+add_executable(file-sorter ${SOURCE_FILES} ${HEADER_FILES})
+
+include_directories(${TO_INCLUDE})
 
 set(GCC_COVERAGE_COMPILE_FLAGS "-pthread")
 
@@ -47,11 +48,13 @@ file(WRITE config/config.conf
         \n
         [check]\n
         \n
-        [done_check]\n
+        [done]\n
         \n
         [targets]\n
         \n
-        [done_targets])
+        [done]\n
+	[exclude]\n
+	[done])
 
 file(WRITE service/file-sorter.service
         [Unit]\n
