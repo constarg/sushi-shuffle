@@ -16,18 +16,34 @@ static void *refresh_config(void *arg)
 {
 	while (1)
 	{
+		// sleep for the configured time.
 		sleep(config_file->c_options.o_parse_interval);
 		pthread_mutex_lock(&config_lock);
 		// reparse the config. Thread safe.
 		reparse_config(config_file);
 		pthread_mutex_unlock(&config_lock);
-	}	
+	}
 }
 
 // the thread that will organize the files.
 static void *organize_files(void *arg)
 {
+	while (1)
+	{
+		// sleep for the configured time.
+		//sleep(config_file->c_options.o_check_interval);
+		pthread_mutex_lock(&config_lock);
+		// read check list.
+	
+		for (int i = 0; config_file->c_lists.l_check_list[i]; i++)
+		{
 		
+		}
+
+		break;
+	
+		pthread_mutex_unlock(&config_lock);
+	}
 }
 
 
