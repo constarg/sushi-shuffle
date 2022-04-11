@@ -96,7 +96,7 @@ static void move_file(const char *path, const char *file_name)
 	strcpy(old_path, path);
 	strcat(old_path, file_name);
 
-	if (!target_path)
+	if (!target_path && config_file->c_options.o_enable_default)
 	{
 		char *default_path = config_file->c_options.o_default_path;
 		send_to = (char *) malloc(sizeof(char) * (strlen(default_path)
@@ -105,16 +105,32 @@ static void move_file(const char *path, const char *file_name)
 		strcpy(send_to, default_path);
 		strcat(send_to, file_name);
 
-		return;
+		if (rename(old_path, send_to) == -1)
+		{
+			// TODO: call logger here.
+		}
+		free(old_path);
+		free(send_to);
+		old_path = NULL;
+		send_to = NULL;
 	}
+	if (!target_path) 
+	{
+		free(old_path);
+		return;
+	}	
 	send_to = (char *) malloc(sizeof(char) * (strlen(target_path)
 				  + strlen(file_name) + 1));
 	if (send_to == NULL) return; // TODO: make a log.
 	strcpy(send_to, target_path);
 	strcat(send_to, file_name);
 
-	printf("send to: %s\n", send_to);
-	// TODO: send to specified path.
+	if (rename(old_path, send_to) == -1)
+	{
+		// TODO: call logger here.
+	}
+	free(old_path);
+	free(send_to);
 }
 
 static void search_files(const char *path)
