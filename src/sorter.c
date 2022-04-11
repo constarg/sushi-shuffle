@@ -81,16 +81,39 @@ static inline char *get_target_rule(const char *ext)
 	return NULL;
 }
 
-static void move_file(const char *path, const char *file_path)
+static void move_file(const char *path, const char *file_name)
 {
-	char *ext = extract_ext(file_path);
+	char *ext = extract_ext(file_name);
 	if (is_excluded(path, ext)) return;
 
-	char *send_to = get_target_rule(ext);
-	if (!send_to)
+	char *old_path = NULL;
+	char *send_to = NULL;	
+	char *target_path = get_target_rule(ext);
+
+	old_path = (char *) malloc(sizeof(char) * (strlen(path) 
+				   + strlen(file_name) + 1));
+	if (old_path == NULL) return; // TODO: make a log.
+	strcpy(old_path, path);
+	strcat(old_path, file_name);
+
+	if (!target_path)
 	{
-		 // TODO: send to default.
+		char *default_path = config_file->c_options.o_default_path;
+		send_to = (char *) malloc(sizeof(char) * (strlen(default_path)
+					  + strlen(file_name) + 1));
+		if (send_to == NULL) return; // TODO: make a log.
+		strcpy(send_to, default_path);
+		strcat(send_to, file_name);
+
+		return;
 	}
+	send_to = (char *) malloc(sizeof(char) * (strlen(target_path)
+				  + strlen(file_name) + 1));
+	if (send_to == NULL) return; // TODO: make a log.
+	strcpy(send_to, target_path);
+	strcat(send_to, file_name);
+
+	printf("send to: %s\n", send_to);
 	// TODO: send to specified path.
 }
 
@@ -98,7 +121,6 @@ static void search_files(const char *path)
 {
 	struct dirent *file = NULL;
 	DIR *dir = NULL;
-	char *file_path = NULL;
 	// open the directory that represent by the path.
 	dir = opendir(path);
 	if (dir == NULL) return; // TODO: make a log here.
@@ -107,16 +129,8 @@ static void search_files(const char *path)
 	{
 		// if the current element of the directory is a file.
 		if (file->d_type == DT_REG && file->d_name[0] != '.')
-		{
-			// allocate space for the absolute path.
-			file_path = (char *) malloc(sizeof(char) * (strlen(path) +
-						    strlen(file->d_name) + 1));
-			strcpy(file_path, path);
-			strcat(file_path, file->d_name);
-
-			move_file(path, file_path);
-			free(file_path);
-			file_path = NULL;
+		{	
+			move_file(path, file->d_name);
 		}
 	}
 	closedir(dir);

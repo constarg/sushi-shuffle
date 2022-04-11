@@ -20,6 +20,8 @@ static char *get_config_buff()
 	char *username = getlogin();
 	char *absolute = (char *) malloc((strlen(CONF_PATH) + strlen(username) + 7) * 
 					 sizeof(char));
+	if (absolute == NULL) return NULL;
+
 	strcpy(absolute, "/home/");
 	strcat(absolute, username);
 	strcat(absolute, CONF_PATH);	
@@ -29,6 +31,8 @@ static char *get_config_buff()
 	if (lstat(absolute, &conf_stat) != 0) return NULL; // TODO: Call the logger here.
 
 	char *conf_buff = (char *) malloc((conf_stat.st_size + 1) * sizeof(char));
+	if (conf_buff == NULL) return NULL;
+
 	int conf_fd = open(absolute, O_RDONLY);
 	if (conf_fd == -1) return NULL; // TODO: Call the logger here. 
 
@@ -103,7 +107,8 @@ static char **parse_list(const char *conf_buff, const char *list)
 		free(list_r);
 		free(tmp);
 		return NULL;
-	}	
+	}
+	
 	// null terminate the array.
 	list_r[real_l] = NULL;
 	free(tmp);
