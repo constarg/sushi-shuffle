@@ -8,6 +8,8 @@
 
 #include <config.h>
 
+#include <stdio.h>
+
 #define CONF_PATH "/.local/share/file_sorter/config/config.conf"
 
 
@@ -55,7 +57,7 @@ static char *isolate_opt(const char *conf_buff, const char *opt)
 static inline unsigned int parse_int_opt(const char *conf_buff, const char *opt)
 {
 	char *opt_a = isolate_opt(conf_buff, opt);
-	int opt_r = (opt_a == NULL)? 0:atoi(opt_a);
+	unsigned int opt_r = (opt_a == NULL)? 0:atoi(opt_a);
 	// TODO: Add warning in logger if the value is zero.
 	free(opt_a); 	
 	return opt_r; // get the int value.
@@ -101,7 +103,7 @@ static char **parse_list(const char *conf_buff, const char *list)
 		free(list_r);
 		free(tmp);
 		return NULL;
-	}
+	}	
 	// null terminate the array.
 	list_r[real_l] = NULL;
 	free(tmp);
