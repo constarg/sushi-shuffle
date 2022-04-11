@@ -51,11 +51,15 @@ enable_default_path 1
 
 [check]
 
-[done_check]
+[done]
 
 [targets]
 
-[done_targets]
+[done]
+
+[exclude]
+
+[done]
 ```
 The config is stored in the following location:<br>
 `~/.local/share/file_sorter/config/config.conf`
@@ -71,6 +75,7 @@ Field |  Description
 `enable_default_path` | If this option is enabled, then any file that do not have a specific location to which they should be sent will be sent to the default.
 `[check]` | This field includes all locations where the program will look for files. Each location that enters this field must be entered before `[done_check]`.
 `[targets]` | This field contains all the file extensions and all the locations that these files should be sent to. Each line in this field consists of two elements that are separated by a space. The first element is the extension of the file and the second is the location where this file should be sent. Also each new line must be entered before `[done_targets]`.
+`[exclude]` | This field contains all the file extensions and all the locations that these files should be ignored. Each line in this field consists of two elements that are separated by a space. The first element is the extension of the file and the second is the location where it must ignore a file. If a file has to be ignored in any location, then * must be placed instead of location. Also each new line must be entered before `[done]`.
 
 An example of `[check]`:<br>
 
@@ -79,7 +84,7 @@ An example of `[check]`:<br>
 /home/username/
 /home/username/Desktop/
 ...
-[done_check]
+[done]
 ```
 
 An example of `[targets]`:<br>
@@ -89,11 +94,22 @@ An example of `[targets]`:<br>
 .py /home/username/Documents/py/
 .cpp /home/username/Documents/cpp/
 ...
-[done_targets]
+[done]
 ```
 
 In the example above the first part consists of the extensions `.py` and `.cpp` and the second part of the
 locations `/home/username/ Documents/py/` and `/home/username/Documents/cpp/`.
+
+```
+[exclude]
+.py /home/username/Documents/py/
+.c *
+...
+[done]
+```
+
+In the example above the first part consists of the extensions `.py` and `.c` and the second part of the
+locations `/home/username/Documents/py/` and `*`.
 
 # Tool
 Due to the nature of this program and this config i made a tool that helps the user to do the following:<br>
