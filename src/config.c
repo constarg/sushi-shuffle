@@ -7,8 +7,7 @@
 #include <fcntl.h>
 
 #include <config.h>
-
-#include <stdio.h>
+#include <logger.h>
 
 #define CONF_PATH "/.local/share/file_sorter/config/config.conf"
 
@@ -20,8 +19,11 @@ static char *get_config_buff()
 	char *username = getlogin();
 	char *absolute = (char *) malloc((strlen(CONF_PATH) + strlen(username) + 7) * 
 					 sizeof(char));
-	if (absolute == NULL) return NULL;
-
+	if (absolute == NULL) 
+	{
+		logger("Failed to allocate mamory.", ERROR);
+		return NULL;
+	}
 	strcpy(absolute, "/home/");
 	strcat(absolute, username);
 	strcat(absolute, CONF_PATH);	
@@ -34,8 +36,11 @@ static char *get_config_buff()
 	if (conf_buff == NULL) return NULL;
 
 	int conf_fd = open(absolute, O_RDONLY);
-	if (conf_fd == -1) return NULL; // TODO: Call the logger here. 
-
+	if (conf_fd == -1) 
+	{
+		logger("Failed to allocate mamory.", ERROR);
+		return NULL; 	
+	}
 	if (read(conf_fd, conf_buff, conf_stat.st_size) == -1) return NULL; // TODO: Call the logger here.
 	close(conf_fd);
 	conf_buff[conf_stat.st_size] = '\0';
@@ -62,7 +67,9 @@ static inline unsigned int parse_int_opt(const char *conf_buff, const char *opt)
 {
 	char *opt_a = isolate_opt(conf_buff, opt);
 	unsigned int opt_r = (opt_a == NULL)? 0:atoi(opt_a);
-	// TODO: Add warning in logger if the value is zero.
+	if (opt_r == 0)
+		logger("An option has value of zero.", WAR);	
+
 	free(opt_a); 	
 	return opt_r; // get the int value.
 }
@@ -78,14 +85,21 @@ static char **parse_list(const char *conf_buff, const char *list)
 	// locate the list.
 	char *tmp = strdup(conf_buff);
 	char *loc = strstr(tmp, list);
-	if (loc == NULL) return NULL; // TODO: print warning using logger.
-
+	if (loc == NULL) 
+	{	
+		logger("List is missing", WAR);
+		return NULL;
+	}
 	char *curr_el = strtok(loc, "\n");
 
 	unsigned int list_l = 10;
 	unsigned int real_l = 0;
 	char *(*list_r) = (char **) malloc(list_l * sizeof(char *));
-	if (list_r == NULL) return NULL; // TODO: print warning using logger.
+	if (list_r == NULL) 
+	{
+		logger("Failed to allocate mamory for list.", WAR);
+		return NULL;
+	}
 
 	for (int c = 0; curr_el; c++)
 	{
@@ -98,7 +112,11 @@ static char **parse_list(const char *conf_buff, const char *list)
 		{	
 			list_l += 10;
 			list_r = (char **) realloc(list_r,  list_l * sizeof(char *));
-			if (list_r == NULL) return NULL; // TODO: print warning using logger. 	
+			if (list_r == NULL) 
+			{
+				logger("Failed to reallocate mamory for list.", WAR);
+				return NULL;  	
+			}
 		}
 		list_r[c] = strdup(curr_el);
 	}
@@ -129,7 +147,7 @@ void parse_config(struct config *dst)
 	char *conf_buff = get_config_buff();
 	if (!conf_buff)
 	{
-		// TODO - call logger.
+		logger("Failed to read config file.", ERROR);	
 		return;
 	}
 
