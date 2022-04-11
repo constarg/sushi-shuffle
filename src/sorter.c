@@ -64,15 +64,34 @@ static inline int is_excluded(const char *path, const char *ext)
 	return 0;
 }
 
+static inline char *get_target_rule(const char *ext)
+{
+	char *(*target_list) = config_file->c_lists.l_target_list;
+	for (int tr = 0; target_list[tr]; tr++)
+	{
+		if (
+			strstr(target_list[tr], ext)
+			||
+			strstr(target_list[tr], "*")
+		   )
+		{
+			return strstr(target_list[tr], "/");
+		}
+	}
+	return NULL;
+}
+
 static void move_file(const char *path, const char *file_path)
 {
 	char *ext = extract_ext(file_path);
-	if (is_excluded(path, ext)) 
+	if (is_excluded(path, ext)) return;
+
+	char *send_to = get_target_rule(ext);
+	if (!send_to)
 	{
-		return;
+		 // TODO: send to default.
 	}
-		
-	
+	// TODO: send to specified path.
 }
 
 static void search_files(const char *path)
