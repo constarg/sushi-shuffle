@@ -1,8 +1,5 @@
 #ifdef __unix__
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
+
 #include <malloc.h>
 
 #include <config.h>
@@ -12,7 +9,7 @@
 // TODO - include logger.
 #endif
 
-#define CONF_PATH "/.local/share/file_sorter/config/config.conf"
+
 
 
 int main(int argc, char *argv[])

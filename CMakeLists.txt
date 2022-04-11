@@ -3,8 +3,8 @@ project(File_Sorter_Core C)
 
 set(CMAKE_C_STANDARD 17)
 
-set(SOURCE_FILES main.c ./src/config.c ./src/sorter.c)
-set(HEADER_FILES ./include/config.h ./include/sorter.h)
+set(SOURCE_FILES main.c ./src/config.c ./src/sorter.c ./src/logger.c)
+set(HEADER_FILES ./include/config.h ./include/sorter.h ./include/logger.h)
 set(TO_INCLUDE ./include/)
 
 add_executable(file-sorter ${SOURCE_FILES} ${HEADER_FILES})

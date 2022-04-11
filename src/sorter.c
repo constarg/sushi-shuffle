@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include <sorter.h>
+#include <logger.h>
 
 static struct config *config_file;
 static pthread_mutex_t config_lock;
@@ -17,7 +18,6 @@ static void *refresh_config(void *arg)
 {
 	while (1)
 	{
-		return NULL;
 		// sleep for the configured time.
 		sleep(config_file->c_options.o_parse_interval);
 		pthread_mutex_lock(&config_lock);
@@ -42,6 +42,7 @@ static inline char *extract_ext(const char *file_path)
 static inline int is_excluded(const char *path, const char *ext)
 {
 	char *(*exclude_l) = config_file->c_lists.l_exclude_list;
+	if (exclude_l == NULL) return 0;
 	for (int exl = 0; exclude_l[exl]; exl++)
 	{ 
 		if (
@@ -67,6 +68,7 @@ static inline int is_excluded(const char *path, const char *ext)
 static inline char *get_target_rule(const char *ext)
 {
 	char *(*target_list) = config_file->c_lists.l_target_list;
+	if (target_list == NULL) return NULL;
 	for (int tr = 0; target_list[tr]; tr++)
 	{
 		if (
@@ -92,7 +94,12 @@ static void move_file(const char *path, const char *file_name)
 
 	old_path = (char *) malloc(sizeof(char) * (strlen(path) 
 				   + strlen(file_name) + 1));
-	if (old_path == NULL) return; // TODO: make a log.
+	if (old_path == NULL) 
+	{
+		if (config_file->c_options.o_debug_log)
+			logger("Failed to allocate space for old path", WAR);
+		return;
+	}
 	strcpy(old_path, path);
 	strcat(old_path, file_name);
 
@@ -107,8 +114,10 @@ static void move_file(const char *path, const char *file_name)
 
 		if (rename(old_path, send_to) == -1)
 		{
-			// TODO: call logger here.
+			if (config_file->c_options.o_debug_log)
+				logger("Failed to move file to default_path", WAR);
 		}
+		logger("Successfully move a file", LOG);
 		free(old_path);
 		free(send_to);
 		old_path = NULL;
@@ -121,14 +130,21 @@ static void move_file(const char *path, const char *file_name)
 	}	
 	send_to = (char *) malloc(sizeof(char) * (strlen(target_path)
 				  + strlen(file_name) + 1));
-	if (send_to == NULL) return; // TODO: make a log.
+	if (send_to == NULL)
+	{
+		if (config_file->c_options.o_debug_log)
+			logger("Failed to allocate space to build the path to send.", WAR);
+		return;
+	}
 	strcpy(send_to, target_path);
 	strcat(send_to, file_name);
 
 	if (rename(old_path, send_to) == -1)
 	{
-		// TODO: call logger here.
+		if (config_file->c_options.o_debug_log)
+			logger("Failed to move file to default_path", WAR);
 	}
+	logger("Successfully move a file", LOG);
 	free(old_path);
 	free(send_to);
 }
@@ -139,8 +155,11 @@ static void search_files(const char *path)
 	DIR *dir = NULL;
 	// open the directory that represent by the path.
 	dir = opendir(path);
-	if (dir == NULL) return; // TODO: make a log here.
-
+	if (dir == NULL)
+	{
+		logger("Failed to open directory.", WAR);
+		return; 
+	}
 	while ((file = readdir(dir)) != NULL)
 	{
 		// if the current element of the directory is a file.
@@ -158,17 +177,15 @@ static void *organize_files(void *arg)
 	while (1)
 	{
 		// sleep for the configured time.
-		//sleep(config_file->c_options.o_check_interval);
+		sleep(config_file->c_options.o_check_interval);
 		pthread_mutex_lock(&config_lock);
 		// read check list.
-	
+		if (config_file->c_lists.l_check_list == NULL) continue;	
 		for (int i = 0; config_file->c_lists.l_check_list[i]; i++)
 		{
 			search_files(config_file->c_lists.l_check_list[i]);
 		}
-
-		break;
-	
+		
 		pthread_mutex_unlock(&config_lock);
 	}
 }
@@ -190,7 +207,7 @@ void start_sorter(struct config *src)
 		pthread_create(&organize_t, NULL, &organize_files, NULL) != 0
 	   )
 	{
-		// TODO - Log that the threads can't be created.
+		logger("Can't create threads, shuting down..", ERROR);		
 		pthread_mutex_destroy(&config_lock);
 		return;
 	}
