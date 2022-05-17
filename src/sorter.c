@@ -32,10 +32,14 @@ static inline char *extract_ext(const char *file_path)
 {
 	char *dot_loc = strstr(file_path, ".");
 	char *tmp = dot_loc;
+
+	if (dot_loc == NULL) return NULL;
+
 	while ((tmp = strstr(++tmp, ".")) != NULL)
 	{
 		dot_loc = tmp;
 	}
+	
 	return dot_loc;
 }
 
@@ -86,6 +90,8 @@ static inline char *get_target_rule(const char *ext)
 static void move_file(const char *path, const char *file_name)
 {
 	char *ext = extract_ext(file_name);
+	if (ext == NULL) return;
+	
 	if (is_excluded(path, ext)) return;
 
 	char *old_path = NULL;
