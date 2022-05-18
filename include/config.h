@@ -15,6 +15,7 @@ struct options
 	unsigned int o_debug_log:1;		// debug log option.
 	char *o_default_path;			// default path option.
 	unsigned int o_enable_default:1;	// enable default path option.
+	unsigned int o_move_no_ext:1;		// move files that has no extention.
 };
 
 // config lists.
@@ -23,7 +24,6 @@ struct lists
 	char *(*l_check_list);			// the check list of the config.
 	char *(*l_target_list);			// the targests of the config.
 	char *(*l_exclude_list);		// the excludes of the config.
-
 };
 
 // the config file.
