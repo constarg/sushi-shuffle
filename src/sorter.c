@@ -11,7 +11,7 @@
 static struct config *config_file;
 static pthread_mutex_t config_lock;
 
-
+#define NO_EXTENTION "noext"
 
 // the thread that will reparse the config file.
 static void *refresh_config(void *arg)
@@ -33,7 +33,7 @@ static inline char *extract_ext(const char *file_path)
 	char *dot_loc = strstr(file_path, ".");
 	char *tmp = dot_loc;
 
-	if (dot_loc == NULL) return NULL;
+	if (dot_loc == NULL) return NO_EXTENTION;
 
 	while ((tmp = strstr(++tmp, ".")) != NULL)
 	{
