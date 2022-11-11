@@ -15,7 +15,7 @@ sudo apt-get install build-essential cmake git gcc
 First download the program from GitHub and go to the File-Sorter-Core folder.
 
 ```
-% git clone https://github.com/rounnus/file-sorter-core.git
+% git clone https://github.com/EmbeddedCat/file-sorter-core.git
 % cd file-sorter-core/
 ```
 
