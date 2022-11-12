@@ -1,4 +1,4 @@
-[![CMake](https://github.com/rounnus/File-Sorter-Core/actions/workflows/File-Sorter-Core%20Build.yml/badge.svg?branch=main)](https://github.com/rounnus/File-Sorter-Core/actions/workflows/File-Sorter-Core%20Build.yml)
+[![CMake](https://github.com/EmbeddedCat/File-Sorter-Core/actions/workflows/File-Sorter-Core%20Build.yml/badge.svg?branch=main)](https://github.com/EmbeddedCat/File-Sorter-Core/actions/workflows/File-Sorter-Core%20Build.yml)
 
 # Introduction
 
@@ -120,7 +120,7 @@ Due to the nature of this program and this config i made a tool that helps the u
    - To be able to change the program settings.<br><br>
 
 The tool described above can be found here:<br>
-https://github.com/rounnus/file-sorter-terminal-tool
+https://github.com/EmbeddedCat/file-sorter-terminal-tool
 
 # Service
 
