@@ -131,3 +131,8 @@ The program can be run using `systemd`. To start the program from `systemd` the 
 - [X] Linux
 - [ ] Windows
 - [ ] Mac
+
+# Contributors
+<a href="https://github.com/EmbeddedCat/file-sorter-core/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=EmbeddedCat/file-sorter-core" />
+</a>
