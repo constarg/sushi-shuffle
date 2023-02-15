@@ -2,10 +2,13 @@
 
 # Introduction
 
-Automatically transfer files, which are scattered outside of their folders, to the folders to which they belong using a simple config file and a tool.
+Automatically transfer files, which are scattered outside of their folders, to the folders to which they belong using a
+simple config file and a tool.
 
 # Installation requirements
+
 The following packages must be installed.<br>
+
 ```
 sudo apt-get install build-essential cmake git gcc
 ```
@@ -62,22 +65,23 @@ move_files_without_ext 0
 
 [done]
 ```
+
 The config is stored in the following location:<br>
 `~/.local/share/file_sorter/config/config.conf`
 
 The information is as follows.<br>
 
-Field |  Description
----------|--------------
-`check_interval` | The time ( seconds ) between checks (for new files etc).
-`parse_interval` | The time ( seconds ) to read the config file again for any changes.
-`debug_log` | For debugging. To enter debug mode, the value of the debugLog field must be changed to 1.
-`default_dir_path` | If a file is found outside of a folder and no specific location has been specified to which it should be moved, then it will go to default_dir_path.
-`enable_default_path` | If this option is enabled, then any file that do not have a specific location to which they should be sent will be sent to the default.
-`move_files_without_ext` | If this option is enabled, then the sorter will move files that has no extension, otherwise those files will be ignored.
-`[check]` | This field includes all locations where the program will look for files. Each location that enters this field must be entered before `[done_check]`.
-`[targets]` | This field contains all the file extensions and all the locations that these files should be sent to. Each line in this field consists of two elements that are separated by a space. The first element is the extension of the file and the second is the location where this file should be sent. Also each new line must be entered before `[done_targets]`.
-`[exclude]` | This field contains all the file extensions and all the locations that these files should be ignored. Each line in this field consists of two elements that are separated by a space. The first element is the extension of the file and the second is the location where it must ignore a file. If a file has to be ignored in any location, then * must be placed instead of location. Also each new line must be entered before `[done]`.
+ Field                    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                  
+--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ `check_interval`         | The time ( seconds ) between checks (for new files etc).                                                                                                                                                                                                                                                                                                                                                                                     
+ `parse_interval`         | The time ( seconds ) to read the config file again for any changes.                                                                                                                                                                                                                                                                                                                                                                          
+ `debug_log`              | For debugging. To enter debug mode, the value of the debugLog field must be changed to 1.                                                                                                                                                                                                                                                                                                                                                    
+ `default_dir_path`       | If a file is found outside of a folder and no specific location has been specified to which it should be moved, then it will go to default_dir_path.                                                                                                                                                                                                                                                                                         
+ `enable_default_path`    | If this option is enabled, then any file that do not have a specific location to which they should be sent will be sent to the default.                                                                                                                                                                                                                                                                                                      
+ `move_files_without_ext` | If this option is enabled, then the sorter will move files that has no extension, otherwise those files will be ignored.                                                                                                                                                                                                                                                                                                                     
+ `[check]`                | This field includes all locations where the program will look for files. Each location that enters this field must be entered before `[done_check]`.                                                                                                                                                                                                                                                                                         
+ `[targets]`              | This field contains all the file extensions and all the locations that these files should be sent to. Each line in this field consists of two elements that are separated by a space. The first element is the extension of the file and the second is the location where this file should be sent. Also each new line must be entered before `[done_targets]`.                                                                              
+ `[exclude]`              | This field contains all the file extensions and all the locations that these files should be ignored. Each line in this field consists of two elements that are separated by a space. The first element is the extension of the file and the second is the location where it must ignore a file. If a file has to be ignored in any location, then * must be placed instead of location. Also each new line must be entered before `[done]`. 
 
 An example of `[check]`:<br>
 
@@ -114,12 +118,14 @@ In the example above the first part consists of the extensions `.py` and `.c` an
 locations `/home/username/Documents/py/` and `*`.
 
 # Tool
+
 Due to the nature of this program and this config i made a tool that helps the user to do the following:<br>
-   - Add locations to the config check field.<br>
-   - Be able to add targets.<br>
-   - To be able to delete check and targets.<br>
-   - To be able to see the check and targets.<br>
-   - To be able to change the program settings.<br><br>
+
+- Add locations to the config check field.<br>
+- Be able to add targets.<br>
+- To be able to delete check and targets.<br>
+- To be able to see the check and targets.<br>
+- To be able to change the program settings.<br><br>
 
 The tool described above can be found here:<br>
 https://github.com/EmbeddedCat/file-sorter-terminal-tool
@@ -130,11 +136,13 @@ The program can be run using `systemd`. To start the program from `systemd` the 
 ``` systemctl --user start file-sorter```
 
 # Compatible operating systems
+
 - [X] Linux
 - [ ] Windows
 - [ ] Mac
 
 # Contributors
+
 <a href="https://github.com/EmbeddedCat/file-sorter-core/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=EmbeddedCat/file-sorter-core" />
 </a>

@@ -14,6 +14,4 @@
 extern void logger(const char *msg, int type);
 
 
-
-
 #endif
