@@ -1,4 +1,4 @@
-[![CMake](https://github.com/rounnus/File-Sorter-Core/actions/workflows/File-Sorter-Core%20Build.yml/badge.svg?branch=main)](https://github.com/rounnus/File-Sorter-Core/actions/workflows/File-Sorter-Core%20Build.yml)
+[![CMake](https://github.com/EmbeddedCat/File-Sorter-Core/actions/workflows/File-Sorter-Core%20Build.yml/badge.svg?branch=main)](https://github.com/EmbeddedCat/File-Sorter-Core/actions/workflows/File-Sorter-Core%20Build.yml)
 
 # Introduction
 
@@ -15,7 +15,7 @@ sudo apt-get install build-essential cmake git gcc
 First download the program from GitHub and go to the File-Sorter-Core folder.
 
 ```
-% git clone https://github.com/rounnus/file-sorter-core.git
+% git clone https://github.com/EmbeddedCat/file-sorter-core.git
 % cd file-sorter-core/
 ```
 
@@ -120,7 +120,7 @@ Due to the nature of this program and this config i made a tool that helps the u
    - To be able to change the program settings.<br><br>
 
 The tool described above can be found here:<br>
-https://github.com/rounnus/file-sorter-terminal-tool
+https://github.com/EmbeddedCat/file-sorter-terminal-tool
 
 # Service
 
@@ -131,3 +131,8 @@ The program can be run using `systemd`. To start the program from `systemd` the 
 - [X] Linux
 - [ ] Windows
 - [ ] Mac
+
+# Contributors
+<a href="https://github.com/EmbeddedCat/file-sorter-core/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=EmbeddedCat/file-sorter-core" />
+</a>
