@@ -45,6 +45,7 @@ file(WRITE config/config.conf
         debug_log\ 0\n
         default_dir_path\ /home/$ENV{USER}/default_sorter_path/\n
         enable_default_path\ 1\n
+	move_files_without_ext\ 0\n
         \n
         [check]\n
         \n
