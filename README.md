@@ -75,7 +75,6 @@ The information is as follows.<br>
  Field                    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                  
 --------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  `check_interval`         | The time ( seconds ) between checks (for new files etc).                                                                                                                                                                                                                                                                                                                                                                                     
- `parse_interval`         | The time ( seconds ) to read the config file again for any changes.                                                                                                                                                                                                                                                                                                                                                                          
  `debug_log`              | For debugging. To enter debug mode, the value of the debugLog field must be changed to 1.                                                                                                                                                                                                                                                                                                                                                    
  `default_dir_path`       | If a file is found outside of a folder and no specific location has been specified to which it should be moved, then it will go to default_dir_path.                                                                                                                                                                                                                                                                                         
  `enable_default_path`    | If this option is enabled, then any file that do not have a specific location to which they should be sent will be sent to the default.                                                                                                                                                                                                                                                                                                      
@@ -118,18 +117,24 @@ locations `/home/username/ Documents/py/` and `/home/username/Documents/cpp/`.
 In the example above the first part consists of the extensions `.py` and `.c` and the second part of the
 locations `/home/username/Documents/py/` and `*`.
 
-# Tool
+# Commands
 
-Due to the nature of this program and this config i made a tool that helps the user to do the following:<br>
+Command |  Description
+---------|--------------
+`file-sorter --start-sorter` | Start the sorter service
+`file-sorter --help` | Displays all available commands. 
+`file-sorter --set-check-interval [value]`  | Changes the value of the check interval field to the value `[value]`. 
+`file-sorter --set-default-dir-path [path]` | Changes the default location to `[path]`.
+`file-sorter --set-enable-default-dir [value]` | 0:1 Enable the to transfer files in default dir.
+`file-sorter --set-debug-log [value]` | Changes the logs status based on the value `[value]`. It can get the values `1` `(debug mode)` and `0` `(normal mode)`.
+`file-sorter --set-mv-without-ext [value]` | 0:1 Enable the program to move files without extention.
+`file-sorter --add-check [path]` | Adds `[path]` to the list of locations that the program looks at.
+`file-sorter --add-target [ext] [path]` | Adds to the list the information that the program must send the file with extension `[ext]` to the location `[path]` if such a file is found. 
+`file-sorter --remove-check [row number]` | Deletes the item in the line `[row_number]`, the line number appears with the command `--list-checks` or `--list-targets`. 
+`file-sorter --list-checks` | Displays all locations that the program looks at.
+`file-sorter --list-targets` | Displays all the elements that describe what the program does for a file. 
+`file-sorter --list-options` | Displays the program options.
 
-- Add locations to the config check field.<br>
-- Be able to add targets.<br>
-- To be able to delete check and targets.<br>
-- To be able to see the check and targets.<br>
-- To be able to change the program settings.<br><br>
-
-The tool described above can be found here:<br>
-https://github.com/EmbeddedCat/file-sorter-terminal-tool
 
 # Service
 
