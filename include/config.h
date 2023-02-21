@@ -6,12 +6,32 @@
 
 #define FAILED_TO_PARSE    -0x1
 
+/**
+ * *******************
+ *   		OPTIONS
+ * *******************
+ */
+#define CHECK_INT   "check_interval"
+#define PARSE_INT   "parse_interval"
+#define DEBUG_LOG   "debug_log"
+#define DEFAULT_DIR "default_dir_path"
+#define EN_DEFAULT  "enable_default_path"
+#define WITHOUT_EXT "move_files_without_ext"
+
+/**
+ * ******************
+ * 			LISTS
+ * ******************
+ */
+#define CHECK_LISTID 	  "[check]"
+#define TARGET_LISTID   "[targets]"
+#define EXCLUDE_LISTID  "[exclude]"
+
 
 // config options.
 struct options
 {
     unsigned int o_check_interval;        // check interval option.
-    unsigned int o_parse_interval;        // parse interval option.
     unsigned int o_debug_log: 1;          // debug log option.
     char        *o_default_path;          // default path option.
     unsigned int o_enable_default: 1;     // enable default path option.
@@ -53,5 +73,7 @@ extern void parse_config(struct config *dst);
 extern void reparse_config(struct config *dst);
 
 extern void destroy_config(struct config *src);
+
+extern int update_config(const struct config *src);
 
 #endif

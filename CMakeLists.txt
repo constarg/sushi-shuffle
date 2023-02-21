@@ -3,8 +3,8 @@ project(File_Sorter_Core C)
 
 set(CMAKE_C_STANDARD 17)
 
-set(SOURCE_FILES main.c ./src/config.c ./src/sorter.c ./src/logger.c)
-set(HEADER_FILES ./include/config.h ./include/sorter.h ./include/logger.h)
+set(SOURCE_FILES main.c ./src/config.c ./src/sorter.c ./src/logger.c ./src/tool/actions.c)
+set(HEADER_FILES ./include/config.h ./include/sorter.h ./include/logger.h ./include/tool/actions.h)
 set(TO_INCLUDE ./include/)
 
 add_executable(file-sorter ${SOURCE_FILES} ${HEADER_FILES})
@@ -41,7 +41,6 @@ endif ()
 file(WRITE config/config.conf
         [basic_config]\n
         check_interval\ 3000\n
-        parse_interval\ 5000\n
         debug_log\ 0\n
         default_dir_path\ /home/$ENV{USER}/default_sorter_path/\n
         enable_default_path\ 1\n
@@ -63,7 +62,7 @@ file(WRITE service/file-sorter.service
         \n
         [Service]\n
         Type=simple\n
-        ExecStart=/bin/bash\ -c\ /usr/bin/file-sorter\n
+        ExecStart=/bin/bash\ -c\ "/home/$ENV{USER}/.local/bin/file-sorter\ --start-sorter"\n
         Restart=on-failure\n
         Group=$ENV{USER}\n
         \n
@@ -82,4 +81,4 @@ file(WRITE autostart/file-sorter.desktop
 install(FILES config/config.conf PERMISSIONS OWNER_WRITE OWNER_READ GROUP_WRITE GROUP_READ WORLD_WRITE WORLD_READ DESTINATION /home/$ENV{USER}/.local/share/file_sorter/config/)
 install(FILES service/file-sorter.service PERMISSIONS OWNER_EXECUTE OWNER_READ WORLD_EXECUTE WORLD_READ DESTINATION /home/$ENV{USER}/.config/systemd/user/)
 install(FILES autostart/file-sorter.desktop PERMISSIONS OWNER_EXECUTE OWNER_READ OWNER_WRITE GROUP_EXECUTE GROUP_READ GROUP_WRITE WORLD_EXECUTE WORLD_READ WORLD_WRITE DESTINATION /home/$ENV{USER}/.config/autostart/)
-install(FILES build/file-sorter PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE DESTINATION /usr/bin/)
+install(FILES build/file-sorter PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE DESTINATION ~/.local/bin/)
