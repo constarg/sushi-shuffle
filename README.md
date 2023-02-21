@@ -2,8 +2,7 @@
 
 # Introduction
 
-Automatically transfer files, which are scattered outside of their folders, to the folders to which they belong using a
-simple config file and a tool.
+The file-sorter-core is a service provided for Linux systems. It helps organize files that are out of folders and is a flexible and lightweight service. It works based on a config file, in which the user can give specific orders to the file-sorter service, a simple example of an order, in human language, is the following "check for files in the directory **/home/username/Desktop/** and if any file ends with **.py** move it to **/home/username/py** folder".
 
 # Installation requirements
 
@@ -42,7 +41,9 @@ After this the program will be installed and ready to run.
 
 # Config
 
-The program gets the information it needs from a config file, which is like the following.
+File-sorter-core reads the following config file to know what it has to do. The basic job of the file sorter is to check for files, in the user-defined locations, and after that to check if there is any file that has an extension, like .py, that is defined in the config rules and move it to the right location. In short, the config file consists of 3 segments. The first segment is the [check], in this segment, there are the user-defined locations that the file-sorter must monitor for files. Each location is defined in a new line between [check] and [done].<br>
+The 2nd segment is the [target], in this segment, there are user-defined rules for each location defined in the [check] segment. Each rule is defined in a new line between [target] and [done].<br>
+Lastly, the 3d segment is the [exclude], in this segment, there are also rules, but the rules in this segment tells the file-sorter to ignore some files in a specific location, defined in [check]. The usage of this segment comes in handy when you had a rule in the [target] segment, but you don't want to apply it in all the locations defined in the [check] segment. Each rule is defined in a new line between [exclude] and [done].
 
 ```
 [basic_config]
