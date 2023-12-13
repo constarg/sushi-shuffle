@@ -117,7 +117,6 @@ move_files_without_ext 0
 
 [done]
 ```
-Let the file-sorting adventure begin!
 
 # Contributors
 
