@@ -3,7 +3,7 @@
 
 # Introduction
 
-Welcome to file-sorter-core, your new ally in conquering the chaos of file organization on Linux systems. This lightweight and flexible service is designed to rescue your files from the abyss of disorder, operating seamlessly based on a straightforward config file. Imagine giving specific orders to your file-sorter like – "Hey, check /home/username/Desktop/, and if you find any *.py files, move them to /home/username/py!" It's that simple.
+Welcome to file-sorter-core, your new ally in conquering the chaos of file organization. This lightweight and flexible service is designed to rescue your files from the abyss of disorder, operating seamlessly based on a straightforward config file. Imagine giving specific orders to your file-sorter like – "Hey, check /home/username/Desktop/, and if you find any *.py files, move them to /home/username/py!" It's that simple.
 
 # Installation Requirements
 
