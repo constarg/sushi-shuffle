@@ -10,7 +10,7 @@
 #include <stdio.h>
 #endif
 
-const char usage[] = "Usage:\n \tfile-sorter [OPTION] ...\n\n"
+const char usage[] = "Usage:\n \tsushi-shuffle [OPTION] ...\n\n"
                      "\t--start-sorter.           Start the sorter service\n"
                      "\t--set-check-interval      [value] Change the value of check interval.\n"
                      "\t--set-default-dir-path    [path] Change the default directory path.\n"
@@ -25,7 +25,7 @@ const char usage[] = "Usage:\n \tfile-sorter [OPTION] ...\n\n"
                      "\t--list-targets list targets.\n"
                      "\t--list-options list options.\n\n\n"
                      "Each of the above commands will print an OK message on success.\n"
-                     "Check https://github.com/EmbeddedCat/file-sorter-core for more information's about the project!.\n";
+                     "Check https://github.com/constarg/sushi-shuffle for more information's about the project!.\n";
 
 static inline int help()
 {
