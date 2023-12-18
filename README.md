@@ -15,7 +15,7 @@ sudo apt-get install build-essential cmake git gcc
 
 # Download & Build
 
-Get started by cloning the repository and navigating to the File-Sorter-Core folder:
+Get started by cloning the repository and navigating to the sushi-shuffle folder:
 ```
 git clone https://github.com/constarg/sushi-shuffle.git
 cd sushi-shuffle/
