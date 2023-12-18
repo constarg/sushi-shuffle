@@ -3,7 +3,7 @@ project(Sushi_Shuffle C)
 
 set(CMAKE_C_STANDARD 17)
 
-set(SOURCE_FILES main.c ./src/config.c ./src/sorter.c ./src/logger.c ./src/tool/actions.c)
+set(SOURCE_FILES ./src/main.c ./src/config.c ./src/sorter.c ./src/logger.c ./src/tool/actions.c)
 set(HEADER_FILES ./include/config.h ./include/sorter.h ./include/logger.h ./include/tool/actions.h)
 set(TO_INCLUDE ./include/)
 
